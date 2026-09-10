@@ -50,9 +50,9 @@ export default function About() {
           <div className="lg:col-span-5 relative" ref={imgRef}>
             <Reveal>
               <div className="relative">
-                <div className="absolute -top-6 -left-6 font-display font-extrabold text-[8rem] leading-none text-stroke-ink select-none" aria-hidden>
+                {/* <div className="absolute -top-6 -left-6 font-display font-extrabold text-[8rem] leading-none text-stroke-ink select-none" aria-hidden>
                   ME
-                </div>
+                </div> */}
                 <motion.div style={{ y: imgY }} className="relative rounded-[1.6rem] overflow-hidden rotate-2 shadow-2xl shadow-ink/20">
                   <img src="/assets/about_portrait.png" alt="Arvind Rajput" className="w-full object-cover" data-testid="about-portrait" />
                 </motion.div>

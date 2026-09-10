@@ -12,11 +12,12 @@ export const CATEGORIES = [
 ];
 
 export const PROJECTS = [
+//  Graphics Design Tab Images Start Here
   {
     slug: "arm-guards",
     title: "Arm Guards",
     category: "Graphic Design",
-    cats: ["Graphic Design", "Posters"],
+    cats: ["Graphic Design"],
     image: A("proj_armguards"),
     tools: ["Photoshop"],
     year: "2025",
@@ -29,9 +30,9 @@ export const PROJECTS = [
   },
   {
     slug: "premium-massager",
-    title: "Premium Massager",
+    title: "Graphic Design",
     category: "Social Media",
-    cats: ["Social Media", "Graphic Design"],
+    cats: ["Graphic Design"],
     image: A("proj_massager"),
     tools: ["Photoshop", "Illustrator"],
     year: "2025",
@@ -45,8 +46,8 @@ export const PROJECTS = [
   {
     slug: "banana-spot",
     title: "Banana & Spot",
-    category: "Social Media",
-    cats: ["Social Media"],
+    category: "Graphic Design",
+    cats: ["Graphic Design"],
     image: A("proj_banana"),
     tools: ["Photoshop", "Canva"],
     year: "2025",
@@ -56,6 +57,132 @@ export const PROJECTS = [
       "A playful social media creative for an intimate wellness brand. Soft pastel tones, floating fruit elements and hand interaction give the product a friendly, approachable personality.",
     process: ["Defined a playful pastel art direction", "Composited product and fruit elements", "Added hand interaction for a human touch", "Delivered feed and story formats"],
     gallery: [A("proj_banana"), A("proj_massager"), A("banner_valentine")],
+  },
+//  Graphics Design Tab Images End Here
+
+//  Social Media Tab Images Start Here
+   {
+    slug: "vibrating-penis-ring-for-men",
+    title: "Vibrating Penis Ring For Men",
+    category: "Social Media",
+    cats: ["Social Media"],
+    image: A("Vibrating-Penis-Ring-For-Men"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "Intimate Wellness Brand",
+    tagline: "Playful art direction for a bold product creative.",
+    description:
+      "A playful social media creative for an intimate wellness brand. Soft pastel tones, floating fruit elements and hand interaction give the product a friendly, approachable personality.",
+    process: ["Defined a playful pastel art direction", "Composited product and fruit elements", "Added hand interaction for a human touch", "Delivered feed and story formats"],
+    gallery: [A("proj_banana"), A("proj_massager"), A("banner_valentine")],
+  },
+  {
+    slug: "waterbased-jelly-personal-lubricant",
+    title: "Waterbased Jelly Personal Lubricant",
+    category: "Social Media",
+    cats: ["Social Media"],
+    image: A("Waterbased-Jelly-Personal-Lubricant"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "Intimate Wellness Brand",
+    tagline: "Playful art direction for a bold product creative.",
+    description:
+      "A playful social media creative for an intimate wellness brand. Soft pastel tones, floating fruit elements and hand interaction give the product a friendly, approachable personality.",
+    process: ["Defined a playful pastel art direction", "Composited product and fruit elements", "Added hand interaction for a human touch", "Delivered feed and story formats"],
+    gallery: [A("proj_banana"), A("proj_massager"), A("banner_valentine")],
+  },
+  {
+    slug: "strawberry-body-lubricant-200ml",
+    title: "Strawberry Body Lubricant 200ml",
+    category: "Social Media",
+    cats: ["Social Media"],
+    image: A("Strawberry-Body-Lubricant-200ml"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "Intimate Wellness Brand",
+    tagline: "Playful art direction for a bold product creative.",
+    description:
+      "A playful social media creative for an intimate wellness brand. Soft pastel tones, floating fruit elements and hand interaction give the product a friendly, approachable personality.",
+    process: ["Defined a playful pastel art direction", "Composited product and fruit elements", "Added hand interaction for a human touch", "Delivered feed and story formats"],
+    gallery: [A("proj_banana"), A("proj_massager"), A("banner_valentine")],
+  },
+  {
+    slug: "stainless-steel-flat-chastity-cage-device",
+    title: "Stainless Steel Flat Chastity Cage Device",
+    category: "Social Media",
+    cats: ["Social Media"],
+    image: A("Stainless-Steel-Flat-Chastity-Cage-Device"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "Intimate Wellness Brand",
+    tagline: "Playful art direction for a bold product creative.",
+    description:
+      "A playful social media creative for an intimate wellness brand. Soft pastel tones, floating fruit elements and hand interaction give the product a friendly, approachable personality.",
+    process: ["Defined a playful pastel art direction", "Composited product and fruit elements", "Added hand interaction for a human touch", "Delivered feed and story formats"],
+    gallery: [A("proj_banana"), A("proj_massager"), A("banner_valentine")],
+  },
+  {
+    slug: "rose-toy",
+    title: "Rose Toy",
+    category: "Social Media",
+    cats: ["Social Media"],
+    image: A("rose-toy"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "Intimate Wellness Brand",
+    tagline: "Playful art direction for a bold product creative.",
+    description:
+      "A playful social media creative for an intimate wellness brand. Soft pastel tones, floating fruit elements and hand interaction give the product a friendly, approachable personality.",
+    process: ["Defined a playful pastel art direction", "Composited product and fruit elements", "Added hand interaction for a human touch", "Delivered feed and story formats"],
+    gallery: [A("proj_banana"), A("proj_massager"), A("banner_valentine")],
+  },
+//  Social Media Tab Images End Here
+
+//  Poster Tab Images Start Here
+  {
+    slug: "sale-poster",
+    title: "Sales Poster",
+    category: "Posters",
+    cats: ["Posters"],
+    image: A("sale-post"),
+    tools: ["Photoshop"],
+    year: "2025",
+    client: "Wellness Brand",
+    tagline: "Black and gold editorial product poster.",
+    description:
+      "An editorial-style product poster in black and gold. Tall, cropped typography behind the product creates depth, while warm rim lighting keeps the mood luxurious.",
+    process: ["Sketched editorial layout directions", "Layered oversized cropped type behind product", "Graded to a warm black-gold palette", "Final retouch and print-ready export"],
+    gallery: [A("proj_massager2"), A("proj_armguards"), A("proj_massager")],
+  },
+   {
+    slug: "sale-poster-ds",
+    title: "Sales Poster (DS)",
+    category: "Posters",
+    cats: ["Posters"],
+    image: A("sale-post-DS"),
+    tools: ["Photoshop"],
+    year: "2025",
+    client: "Wellness Brand",
+    tagline: "Black and gold editorial product poster.",
+    description:
+      "An editorial-style product poster in black and gold. Tall, cropped typography behind the product creates depth, while warm rim lighting keeps the mood luxurious.",
+    process: ["Sketched editorial layout directions", "Layered oversized cropped type behind product", "Graded to a warm black-gold palette", "Final retouch and print-ready export"],
+    gallery: [A("proj_massager2"), A("proj_armguards"), A("proj_massager")],
+  },
+  {
+    slug: "holi-sale-poster",
+    title: "Holi Sale Poster",
+    category: "Posters",
+    cats: ["Posters", ],
+    image: A("holi-sale-posterds1"),
+    tools: ["Photoshop"],
+    year: "2025",
+    client: "Wellness Brand",
+    tagline: "Black and gold editorial product poster.",
+    description:
+      "An editorial-style product poster in black and gold. Tall, cropped typography behind the product creates depth, while warm rim lighting keeps the mood luxurious.",
+    process: ["Sketched editorial layout directions", "Layered oversized cropped type behind product", "Graded to a warm black-gold palette", "Final retouch and print-ready export"],
+    gallery: [A("proj_massager2"), A("proj_armguards"), A("proj_massager")],
   },
   {
     slug: "massoaged",
@@ -72,6 +199,9 @@ export const PROJECTS = [
     process: ["Sketched editorial layout directions", "Layered oversized cropped type behind product", "Graded to a warm black-gold palette", "Final retouch and print-ready export"],
     gallery: [A("proj_massager2"), A("proj_armguards"), A("proj_massager")],
   },
+// Poster Tab Images End Here
+
+// Branding Tab Images Start Here
   {
     slug: "opus-homes",
     title: "Opus Homes",
@@ -102,6 +232,9 @@ export const PROJECTS = [
     process: ["Built the blueprint visual concept", "Composited tower render with rolled plans", "Set a refined editorial type hierarchy", "Delivered newspaper and digital sizes"],
     gallery: [A("proj_realestate2"), A("proj_realestate1"), A("proj_armguards")],
   },
+// Branding Tab Images End Here
+
+// Website Banners Tab Images Start Here
   {
     slug: "valentines-sale",
     title: "Valentine's Sale",
@@ -147,6 +280,21 @@ export const PROJECTS = [
     process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
     gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
   },
+   {
+    slug: "valentines-at",
+    title: "Valentines At",
+    category: "Website Banners",
+    cats: ["Website Banners"],
+    image: A("valentines-at"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "E-commerce Store",
+    tagline: "A punchy promotional banner with bold product focus.",
+    description:
+      "A promotional website banner with a strong product-led composition. Lavender tones and crisp product cut-outs keep the layout playful yet clean.",
+    process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
+    gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
+  },
   {
     slug: "seasonal-sale",
     title: "Seasonal Sale",
@@ -163,6 +311,84 @@ export const PROJECTS = [
     gallery: [A("banner_water"), A("banner_valentine"), A("banner_men")],
   },
   {
+    slug: "holi-sale-at",
+    title: "Holi Sale At",
+    category: "Website Banners",
+    cats: ["Website Banners"],
+    image: A("holi-sale-at"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "E-commerce Store",
+    tagline: "A punchy promotional banner with bold product focus.",
+    description:
+      "A promotional website banner with a strong product-led composition. Lavender tones and crisp product cut-outs keep the layout playful yet clean.",
+    process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
+    gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
+  },
+  {
+    slug: "holi-sale-1",
+    title: "Holi Sale",
+    category: "Website Banners",
+    cats: ["Website Banners"],
+    image: A("Holi-sale"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "E-commerce Store",
+    tagline: "A punchy promotional banner with bold product focus.",
+    description:
+      "A promotional website banner with a strong product-led composition. Lavender tones and crisp product cut-outs keep the layout playful yet clean.",
+    process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
+    gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
+  },
+  {
+    slug: "holi-sale-2",
+    title: "Holi Sale",
+    category: "Website Banners",
+    cats: ["Website Banners"],
+    image: A("mydakrhsop-holi-sale3"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "E-commerce Store",
+    tagline: "A punchy promotional banner with bold product focus.",
+    description:
+      "A promotional website banner with a strong product-led composition. Lavender tones and crisp product cut-outs keep the layout playful yet clean.",
+    process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
+    gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
+  },
+  {
+    slug: "holi-sale-3",
+    title: "Holi Sale",
+    category: "Website Banners",
+    cats: ["Website Banners"],
+    image: A("DS"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "E-commerce Store",
+    tagline: "A punchy promotional banner with bold product focus.",
+    description:
+      "A promotional website banner with a strong product-led composition. Lavender tones and crisp product cut-outs keep the layout playful yet clean.",
+    process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
+    gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
+  },
+   {
+    slug: "holi-sale-4",
+    title: "Holi Sale",
+    category: "Website Banners",
+    cats: ["Website Banners"],
+    image: A("holi-sale-banner"),
+    tools: ["Photoshop", "Canva"],
+    year: "2025",
+    client: "E-commerce Store",
+    tagline: "A punchy promotional banner with bold product focus.",
+    description:
+      "A promotional website banner with a strong product-led composition. Lavender tones and crisp product cut-outs keep the layout playful yet clean.",
+    process: ["Chose a standout product-first layout", "Built a soft lavender backdrop", "Added bold condensed headline", "Exported multiple breakpoints"],
+    gallery: [A("banner_men"), A("banner_water"), A("banner_women")],
+  },
+// Website Banners Tab Images End Here
+
+// Extra Social Media Tab Image (wide card) Start Here
+  {
     slug: "wellness-campaign",
     title: "Wellness Social Campaign",
     category: "Social Media",
@@ -178,12 +404,15 @@ export const PROJECTS = [
     gallery: [A("social_mockup"), A("proj_banana"), A("proj_massager")],
     wide: true,
   },
+// Extra Social Media Tab Image (wide card) End Here
+
+// Motion Graphics Videos Start Here
   {
     slug: "countries-crude",
     title: "Countries & Crude",
     category: "Motion Graphics",
     cats: ["Motion Graphics"],
-    image: A("motion1"),
+    // image: A("motion1"),
     tools: ["After Effects", "Premiere Pro"],
     year: "2024",
     client: "Editorial Channel",
@@ -199,7 +428,7 @@ export const PROJECTS = [
     title: "Pro Edit Reel",
     category: "Motion Graphics",
     cats: ["Motion Graphics", "Video Editing"],
-    image: A("motion2"),
+    // image: A("motion2"),
     tools: ["After Effects"],
     year: "2024",
     client: "Personal Reel",
@@ -215,7 +444,7 @@ export const PROJECTS = [
     title: "Besides?",
     category: "Motion Graphics",
     cats: ["Motion Graphics"],
-    image: A("motion3"),
+    // image: A("motion3"),
     tools: ["After Effects", "Premiere Pro"],
     year: "2024",
     client: "Short-form Content",
@@ -226,6 +455,93 @@ export const PROJECTS = [
     gallery: [A("motion3"), A("motion1"), A("motion2")],
     video: "https://razputeditz.my.canva.site/_assets/video/b8cd83170a0378b5e102dc2d2fa6d278.mp4",
   },
+  {
+    // NOTE: give this a real title/tagline/description that matches this
+    // specific video — placeholders below just so nothing renders blank.
+    slug: "mini-bullet-vibrator",
+    title: "Mini Bullet Vibrator Reel",
+    category: "Motion Graphics",
+    cats: ["Motion Graphics"],
+    // image: A("motion3"),
+    tools: ["After Effects", "Premiere Pro"],
+    year: "2024",
+    client: "Short-form Content",
+    tagline: "A quick product-focused motion cut.",
+    description:
+      "A short product-led motion piece for a wellness item, cut for fast social consumption.",
+    process: ["Wrote the single-line hook", "Designed the type system", "Animated cuts to the beat", "Colour graded the final piece"],
+    gallery: [A("motion3"), A("motion1"), A("motion2")],
+    video: "/assets/Powerful Mini Bullet Vibrator - G-spot Mini Dildo.mp4",
+  },
+  {
+    // NOTE: same as above — update title/tagline/description for this clip.
+    slug: "motion-reel-03",
+    title: "Motion Reel 03",
+    category: "Motion Graphics",
+    cats: ["Motion Graphics"],
+    // image: A("motion3"),
+    tools: ["After Effects", "Premiere Pro"],
+    year: "2024",
+    client: "Short-form Content",
+    tagline: "A minimal type-driven motion short.",
+    description:
+      "A minimal, type-driven motion short cut for fast-paced social feeds.",
+    process: ["Wrote the single-line hook", "Designed the type system", "Animated cuts to the beat", "Colour graded the final piece"],
+    gallery: [A("motion3"), A("motion1"), A("motion2")],
+    video: "/assets/3rd.mp4",
+  },
+  {
+    slug: "video-edit-03",
+    title: "Video Edit 03",
+    category: "Motion Graphics",
+    cats: ["Motion Graphics", "Video Editing"],
+    image: A("travel2"),
+    tools: ["Premiere Pro"],
+    year: "2024",
+    client: "Travel Creator",
+    tagline: "A coastline journey cut to the beat.",
+    description:
+      "A coastal travel reel following cliffside rails and turquoise water. Beat-matched cuts and natural sound design keep the viewer inside the journey.",
+    process: ["Synced the cut to the track", "Mixed natural ambience", "Stabilised and retimed clips", "Delivered vertical reel formats"],
+    gallery: [A("travel2"), A("travel3"), A("travel1")],
+    video: "/assets/new.mp4",
+  },
+  {
+    slug: "video-edit-04",
+    title: "Video Edit 04",
+    category: "Motion Graphics",
+    cats: ["Motion Graphics", "Video Editing"],
+    image: A("travel2"),
+    tools: ["Premiere Pro"],
+    year: "2024",
+    client: "Travel Creator",
+    tagline: "A coastline journey cut to the beat.",
+    description:
+      "A coastal travel reel following cliffside rails and turquoise water. Beat-matched cuts and natural sound design keep the viewer inside the journey.",
+    process: ["Synced the cut to the track", "Mixed natural ambience", "Stabilised and retimed clips", "Delivered vertical reel formats"],
+    gallery: [A("travel2"), A("travel3"), A("travel1")],
+    video: "/assets/sex toys 5 types.mp4",
+  },
+  {
+    slug: "video-edit-05",
+    title: "Video Edit 05",
+    category: "Motion Graphics",
+    cats: ["Motion Graphics", "Video Editing"],
+    image: A("travel2"),
+    tools: ["Premiere Pro"],
+    year: "2024",
+    client: "Travel Creator",
+    tagline: "A coastline journey cut to the beat.",
+    description:
+      "A coastal travel reel following cliffside rails and turquoise water. Beat-matched cuts and natural sound design keep the viewer inside the journey.",
+    process: ["Synced the cut to the track", "Mixed natural ambience", "Stabilised and retimed clips", "Delivered vertical reel formats"],
+    gallery: [A("travel2"), A("travel3"), A("travel1")],
+    video: "/assets/anal toysnew.mp4",
+  },
+
+    // Motion Graphics Videos End Here
+
+    // Video Editing Tab Videos Start Here
   {
     slug: "aerial-garden",
     title: "Aerial Garden",
@@ -274,6 +590,7 @@ export const PROJECTS = [
     gallery: [A("travel3"), A("travel1"), A("travel2")],
     video: "https://razputeditz.my.canva.site/_assets/video/9d6eecff72b86957e63fa51f6d852792.mp4",
   },
+// Video Editing Tab Videos End Here
 ];
 
 export const getProject = (slug) => PROJECTS.find((p) => p.slug === slug);

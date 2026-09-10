@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Play } from "lucide-react";
 import { Reveal, LineMask } from "./Reveal";
 import { PROJECTS, CATEGORIES } from "../data/projects";
 
@@ -17,6 +17,135 @@ const SPANS = [
   "md:col-span-2",
   "md:col-span-2",
 ];
+
+// Fixed span for video cards so every video box is the same size
+const VIDEO_SPAN = "md:col-span-3";
+
+function ImageCard({ p }) {
+  return (
+    <Link
+      to={`/project/${p.slug}`}
+      data-cursor="view"
+      className="group relative block w-full overflow-hidden rounded-2xl bg-coal"
+      data-testid={`project-card-${p.slug}`}
+    >
+      {/* Project Image */}
+      <img
+        src={p.image}
+        alt={p.title}
+        loading="lazy"
+        className="block w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
+
+      {/* Project Content */}
+      <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 flex items-end justify-between gap-3">
+        <div className="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-acid">
+            {p.category}
+          </span>
+
+          <h3 className="font-display font-extrabold text-xl md:text-2xl text-bone tracking-tight mt-1">
+            {p.title}
+          </h3>
+
+          <p className="text-xs text-bone/50 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-1">
+            {p.tagline}
+          </p>
+        </div>
+
+        {/* Arrow */}
+        <span className="shrink-0 w-11 h-11 rounded-full bg-acid text-ink flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500">
+          <ArrowUpRight className="w-5 h-5" />
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+function VideoCard({ p }) {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlay = async () => {
+    if (!videoRef.current) return;
+    try {
+      await videoRef.current.play();
+      setIsPlaying(true);
+    } catch (err) {
+      console.error("Video play failed:", err);
+    }
+  };
+
+  const handlePause = () => setIsPlaying(false);
+  const handleEnded = () => setIsPlaying(false);
+
+  return (
+    <div
+      className="group relative block w-full aspect-video overflow-hidden rounded-2xl bg-black"
+      data-testid={`project-card-${p.slug}`}
+    >
+      {/*
+        Single <video> element does double duty:
+        - Paused (before click) it shows the video's own first frame as the
+          thumbnail automatically (preload="metadata"), cropped with
+          object-cover to fill the box neatly — no manual `image` field needed.
+        - Once playing, it switches to object-contain so the full video is
+          visible without any cropping, still inside the same box.
+      */}
+      <video
+        ref={videoRef}
+        src={p.video}
+        preload="metadata"
+        playsInline
+        controls={isPlaying}
+        onPause={handlePause}
+        onEnded={handleEnded}
+        className={`absolute inset-0 w-full h-full bg-black ${
+          isPlaying ? "object-contain" : "object-cover"
+        }`}
+      />
+
+      {/* Thumbnail overlay + play button (hidden once playing) */}
+      {!isPlaying && (
+        <button
+          type="button"
+          onClick={handlePlay}
+          data-cursor="view"
+          aria-label={`Play ${p.title}`}
+          className="absolute inset-0 z-10 w-full h-full text-left"
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
+
+          {/* Play button, centered */}
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="w-16 h-16 rounded-full bg-acid text-ink flex items-center justify-center scale-90 group-hover:scale-100 transition-transform duration-300 shadow-lg">
+              <Play className="w-6 h-6 ml-0.5" fill="currentColor" />
+            </span>
+          </span>
+
+          {/* Project Content */}
+          <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 text-left">
+            <span className="text-[10px] tracking-[0.25em] uppercase text-acid">
+              {p.category}
+            </span>
+
+            <h3 className="font-display font-extrabold text-xl md:text-2xl text-bone tracking-tight mt-1">
+              {p.title}
+            </h3>
+
+            <p className="text-xs text-bone/50 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-1">
+              {p.tagline}
+            </p>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function Projects() {
   const [filter, setFilter] = useState("All");
@@ -95,72 +224,41 @@ export default function Projects() {
           className="grid grid-cols-1 md:grid-cols-6 gap-5 md:gap-6 items-start"
         >
           <AnimatePresence mode="popLayout">
-            {filtered.map((p, i) => (
-              <motion.div
-                layout
-                key={p.slug}
-                initial={{
-                  opacity: 0,
-                  y: 50,
-                  scale: 0.96,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.94,
-                }}
-                transition={{
-                  duration: 0.6,
-                  delay: (i % 5) * 0.06,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className={SPANS[i % SPANS.length]}
-              >
-                <Link
-                  to={`/project/${p.slug}`}
-                  data-cursor="view"
-                  className="group relative block w-full overflow-hidden rounded-2xl bg-coal"
-                  data-testid={`project-card-${p.slug}`}
+            {filtered.map((p, i) => {
+              // Any project that has a `video` field in the data file is
+              // treated as a video card automatically — no matter which
+              // tab it belongs to, and no matter how many are added later.
+              const isVideo = Boolean(p.video);
+
+              return (
+                <motion.div
+                  layout
+                  key={p.slug}
+                  initial={{
+                    opacity: 0,
+                    y: 50,
+                    scale: 0.96,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.94,
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: (i % 5) * 0.06,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className={isVideo ? VIDEO_SPAN : SPANS[i % SPANS.length]}
                 >
-                  {/* Project Image */}
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    loading="lazy"
-                    className="block w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
-
-                  {/* Project Content */}
-                  <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 flex items-end justify-between gap-3">
-                    <div className="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                      <span className="text-[10px] tracking-[0.25em] uppercase text-acid">
-                        {p.category}
-                      </span>
-
-                      <h3 className="font-display font-extrabold text-xl md:text-2xl text-bone tracking-tight mt-1">
-                        {p.title}
-                      </h3>
-
-                      <p className="text-xs text-bone/50 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-1">
-                        {p.tagline}
-                      </p>
-                    </div>
-
-                    {/* Arrow */}
-                    <span className="shrink-0 w-11 h-11 rounded-full bg-acid text-ink flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500">
-                      <ArrowUpRight className="w-5 h-5" />
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  {isVideo ? <VideoCard p={p} /> : <ImageCard p={p} />}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
       </div>

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import { Reveal, LineMask } from "./Reveal";
@@ -14,6 +14,9 @@ const MOTION = PROJECTS.filter((p) =>
   p.cats.includes("Motion Graphics")
 );
 
+// How fast the motion-graphics row auto-scrolls, in pixels per frame.
+const AUTO_SCROLL_SPEED = 0.6;
+
 function PlayBadge() {
   return (
     <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -28,27 +31,33 @@ function VideoCard({
   video,
   className = "",
   motionCard = false,
+  onPlayingChange,
 }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const setPlaying = (val) => {
+    setIsPlaying(val);
+    onPlayingChange?.(val);
+  };
 
   const handlePlay = async () => {
     if (!videoRef.current) return;
 
     try {
       await videoRef.current.play();
-      setIsPlaying(true);
+      setPlaying(true);
     } catch (error) {
       console.error("Video play failed:", error);
     }
   };
 
   const handlePause = () => {
-    setIsPlaying(false);
+    setPlaying(false);
   };
 
   const handleEnded = () => {
-    setIsPlaying(false);
+    setPlaying(false);
   };
 
   return (
@@ -56,21 +65,29 @@ function VideoCard({
       className={`group relative overflow-hidden rounded-2xl bg-black ${className}`}
       data-testid={`video-card-${video.slug}`}
     >
-      {/* Actual Video */}
+      {/*
+        Single <video> element does double duty:
+        - Paused (before click) it shows the video's own first frame as the
+          thumbnail automatically (preload="metadata"), cropped with
+          object-cover to fill the box neatly — no `image` field needed.
+        - Once playing, it switches to object-contain so the full video is
+          visible without any cropping, still inside the same box.
+      */}
       <video
         ref={videoRef}
         src={video.video}
-        poster={video.image}
-        playsInline
         preload="metadata"
+        playsInline
         controls={isPlaying}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={() => setPlaying(true)}
         onPause={handlePause}
         onEnded={handleEnded}
-        className="absolute inset-0 w-full h-full object-cover bg-black"
+        className={`absolute inset-0 w-full h-full bg-black ${
+          isPlaying ? "object-contain" : "object-cover"
+        }`}
       />
 
-      {/* Thumbnail / Play Overlay */}
+      {/* Play Overlay (hidden once playing) */}
       {!isPlaying && (
         <button
           type="button"
@@ -80,13 +97,6 @@ function VideoCard({
           data-testid={`video-play-${video.slug}`}
           className="absolute inset-0 z-10 w-full h-full text-left"
         >
-          {/* Thumbnail */}
-          <img
-            src={video.image}
-            alt={video.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-
           {/* Dark Gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-transparent to-transparent" />
 
@@ -141,6 +151,137 @@ function VideoCard({
 
 export default function VideoSections() {
   const [feature, ...rest] = EDITS;
+
+  // ---- Motion Graphics horizontal auto-scroller ----
+  const scrollerRef = useRef(null);
+  const isHoveringRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const playingCountRef = useRef(0);
+  const dragState = useRef({ startX: 0, startScroll: 0, moved: false });
+  const rafRef = useRef(null);
+
+  // Render the motion list twice back-to-back so we can loop the scroll
+  // seamlessly (jump exactly at the halfway point, where content repeats).
+  const LOOPED_MOTION =
+    MOTION.length > 0 ? [...MOTION, ...MOTION] : [];
+
+  // Keeps scrollLeft inside [0, halfWidth) so the loop never visibly jumps.
+  const normalizeLoop = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const half = el.scrollWidth / 2;
+    if (half <= 0) return;
+    if (el.scrollLeft >= half) {
+      el.scrollLeft -= half;
+    } else if (el.scrollLeft < 0) {
+      el.scrollLeft += half;
+    }
+  };
+
+  // Continuous auto-scroll loop. Pauses on hover, drag, or while a video
+  // in the row is playing.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || MOTION.length === 0) return;
+
+    const step = () => {
+      const isPaused =
+        isHoveringRef.current ||
+        isDraggingRef.current ||
+        playingCountRef.current > 0;
+
+      if (!isPaused) {
+        el.scrollLeft += AUTO_SCROLL_SPEED;
+        normalizeLoop();
+      }
+      rafRef.current = requestAnimationFrame(step);
+    };
+
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleMouseEnter = () => {
+    isHoveringRef.current = true;
+  };
+  const handleMouseLeaveHover = () => {
+    isHoveringRef.current = false;
+    isDraggingRef.current = false;
+  };
+
+  // Let a normal vertical mouse-wheel / trackpad gesture move the row
+  // sideways too, not just shift+scroll.
+  const handleWheel = (e) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const canScroll = el.scrollWidth > el.clientWidth;
+    if (!canScroll) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+      normalizeLoop();
+    }
+  };
+
+  // Click-and-drag scrolling for desktop mouse users.
+  const handleMouseDown = (e) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    dragState.current = {
+      startX: e.pageX,
+      startScroll: el.scrollLeft,
+      moved: false,
+    };
+  };
+
+  const handleMouseMove = (e) => {
+    const el = scrollerRef.current;
+    if (!el || !isDraggingRef.current) return;
+    const delta = e.pageX - dragState.current.startX;
+    if (Math.abs(delta) > 3) dragState.current.moved = true;
+    el.scrollLeft = dragState.current.startScroll - delta;
+    normalizeLoop();
+  };
+
+  const endDrag = () => {
+    isDraggingRef.current = false;
+  };
+
+  // Touch support: pause auto-scroll while the user's finger is on the row.
+  const handleTouchStart = (e) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    dragState.current = {
+      startX: e.touches[0].pageX,
+      startScroll: el.scrollLeft,
+      moved: false,
+    };
+  };
+
+  const handleTouchMove = (e) => {
+    const el = scrollerRef.current;
+    if (!el || !isDraggingRef.current) return;
+    const delta = e.touches[0].pageX - dragState.current.startX;
+    if (Math.abs(delta) > 3) dragState.current.moved = true;
+    el.scrollLeft = dragState.current.startScroll - delta;
+    normalizeLoop();
+  };
+
+  const handleTouchEnd = () => {
+    isDraggingRef.current = false;
+  };
+
+  // Prevent a drag-release from being interpreted as a click on the
+  // play button underneath it.
+  const handleClickCapture = (e) => {
+    if (dragState.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   return (
     <>
@@ -249,23 +390,34 @@ export default function VideoSections() {
 
             <Reveal delay={0.15}>
               <p className="text-xs tracking-[0.3em] uppercase text-bone/40">
-                Scroll / drag sideways →
+                Auto-scrolling — hover to pause
               </p>
             </Reveal>
 
           </div>
         </div>
 
-        {/* Horizontal Video Scroller */}
+        {/* Horizontal Video Scroller (auto-scrolls, pauses on hover/drag/play) */}
         <div
-          className="overflow-x-auto no-scrollbar snap-x snap-mandatory"
+          ref={scrollerRef}
+          className="overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
           data-testid="motion-scroller"
+          onWheel={handleWheel}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeaveHover}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={endDrag}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onClickCapture={handleClickCapture}
         >
           <div className="flex gap-6 px-6 md:px-10 w-max">
 
-            {MOTION.map((m, i) => (
+            {LOOPED_MOTION.map((m, i) => (
               <motion.div
-                key={m.slug}
+                key={`${m.slug}-${i}`}
                 initial={{
                   opacity: 0,
                   y: 60,
@@ -279,18 +431,21 @@ export default function VideoSections() {
                 }}
                 transition={{
                   duration: 0.8,
-                  delay: i * 0.1,
+                  delay: (i % MOTION.length) * 0.1,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="snap-center"
               >
                 <VideoCard
                   video={{
                     ...m,
-                    index: `0${i + 1}`,
+                    index: `0${(i % MOTION.length) + 1}`,
                   }}
                   motionCard
                   className="w-[70vw] sm:w-[42vw] lg:w-[24vw] aspect-[9/16]"
+                  onPlayingChange={(playing) => {
+                    playingCountRef.current += playing ? 1 : -1;
+                    if (playingCountRef.current < 0) playingCountRef.current = 0;
+                  }}
                 />
               </motion.div>
             ))}

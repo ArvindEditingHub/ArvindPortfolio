@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, ArrowUpRight, Film, Palette, Play, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Film, Palette, Play, Sparkles, X } from "lucide-react";
 import Magnetic from "./Magnetic";
 import Marquee from "./Marquee";
 import { scrollToSection } from "./Nav";
@@ -14,11 +14,13 @@ const lineAnim = (delay) => ({
 // Words the typewriter cycles through — edit freely
 const ROLES = ["Graphic Designer", "Video Editor", "Motion Artist", "Brand Storyteller"];
 
-// Showcase panels — reuses existing assets
+// Showcase panels — reuses existing assets.
+// NOTE: no separate thumbnail image needed anymore — each video auto-generates
+// its own thumbnail from its first frame (see ShowcaseStack below).
 const SHOWCASE = [
-  { img: "/assets/motion1.png", label: "Motion Graphics", icon: Film },
-  { img: "/assets/motion2.png", label: "Video Editing", icon: Play },
-  { img: "/assets/motion3.png", label: "Visual Design", icon: Palette },
+  { video: "https://razputeditz.my.canva.site/_assets/video/f246229076d469ff65bdfb72dfe3c5a1.mp4", label: "Motion Graphics", icon: Film },
+  { video: "/assets/travelcase.mp4", label: "Video Editing", icon: Play },
+  { video: "/assets/leh ladakh .mp4", label: "Visual Design", icon: Palette },
 ];
 
 /** Classic typewriter: types a word, holds, deletes, moves to next word. */
@@ -75,49 +77,116 @@ function Typewriter({ words, typeSpeed = 65, deleteSpeed = 35, hold = 1300, star
 
 function ShowcaseStack() {
   const [active, setActive] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const [playingIndex, setPlayingIndex] = useState(null);
+  const videoRefs = useRef([]);
+
+  // Auto-rotate only when NOT hovering and NOT currently playing a video
   useEffect(() => {
+    if (isHovering || playingIndex !== null) return;
     const t = setInterval(() => setActive((v) => (v + 1) % SHOWCASE.length), 2800);
     return () => clearInterval(t);
-  }, []);
+  }, [isHovering, playingIndex]);
+
+  const handlePlayClick = async (idx) => {
+    setActive(idx);
+    setPlayingIndex(idx);
+
+    const el = videoRefs.current[idx];
+    if (!el) return;
+    try {
+      el.muted = false;
+      el.currentTime = 0;
+      await el.play();
+    } catch (error) {
+      console.error("Video play failed:", error);
+    }
+  };
+
+  const handleClosePlay = () => {
+    const el = videoRefs.current[playingIndex];
+    if (el) {
+      el.pause();
+      el.currentTime = 0;
+      el.muted = true;
+    }
+    setPlayingIndex(null);
+  };
 
   return (
-    <div className="relative w-full max-w-md aspect-[4/5] mx-auto">
+    <div
+      className="relative w-full max-w-md aspect-[4/5] mx-auto"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       {SHOWCASE.map((card, idx) => {
         const offset = (idx - active + SHOWCASE.length) % SHOWCASE.length;
         const isFront = offset === 0;
         const Icon = card.icon;
+        const isPlaying = playingIndex === idx;
+
+        // Clicking a back card brings it to front; if a different card's
+        // video is currently playing, close it first.
+        const handleCardClick = () => {
+          if (isFront) return;
+          if (playingIndex !== null && playingIndex !== idx) {
+            handleClosePlay();
+          }
+          setActive(idx);
+        };
+
         return (
           <motion.div
-            key={card.img}
+            key={card.video}
+            onClick={handleCardClick}
             animate={{
               scale: isFront ? 1 : 0.93 - offset * 0.035,
               y: isFront ? 0 : 22 + offset * 16,
               x: isFront ? 0 : 12 + offset * 12,
               rotate: isFront ? -2.5 : 3.5 + offset * 3,
               opacity: offset > 1.5 ? 0 : 1,
-              zIndex: SHOWCASE.length - offset,
+              zIndex: isPlaying ? 50 : SHOWCASE.length - offset,
             }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0"
+            className={`absolute inset-0 ${!isFront ? "cursor-pointer" : ""}`}
           >
             <div className="relative w-full h-full rounded-[1.8rem] overflow-hidden bg-bone p-2.5 shadow-2xl shadow-black/60">
-              <img
-                src={card.img}
-                alt={card.label}
-                className="w-full h-full rounded-[1.4rem] object-cover"
+              {/*
+                Single <video> element per card doubles as both the
+                auto-generated thumbnail (paused, showing its own first
+                frame via preload="metadata") and the actual playable video
+                — no separate thumbnail image needed.
+                - Paused: object-cover, muted, no controls (acts as thumbnail)
+                - Playing: object-contain, unmuted, controls visible
+              */}
+              <video
+                ref={(el) => (videoRefs.current[idx] = el)}
+                src={card.video}
+                preload="metadata"
+                muted={!isPlaying}
+                controls={isPlaying}
+                playsInline
+                onEnded={handleClosePlay}
+                className={`w-full h-full rounded-[1.4rem] bg-black ${
+                  isPlaying ? "object-contain" : "object-cover"
+                }`}
               />
-              {isFront && (
+
+              {isFront && !isPlaying && (
                 <>
-                  <motion.div
+                  <motion.button
+                    type="button"
+                    onClick={() => handlePlayClick(idx)}
                     initial={{ opacity: 0, scale: 0.6 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.15, duration: 0.4 }}
-                    className="absolute inset-2.5 rounded-[1.4rem] flex items-center justify-center"
+                    className="absolute inset-2.5 rounded-[1.4rem] flex items-center justify-center cursor-pointer"
+                    aria-label={`Play ${card.label} video`}
                   >
-                    <span className="w-16 h-16 rounded-full bg-acid/95 flex items-center justify-center shadow-xl">
+                    <span className="w-16 h-16 rounded-full bg-acid/95 flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-300">
                       <Play className="w-6 h-6 text-ink fill-ink translate-x-[1px]" />
                     </span>
-                  </motion.div>
+                  </motion.button>
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -131,6 +200,17 @@ function ShowcaseStack() {
                   </motion.div>
                 </>
               )}
+
+              {isPlaying && (
+                <button
+                  type="button"
+                  onClick={handleClosePlay}
+                  aria-label="Close video"
+                  className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-ink/80 text-bone flex items-center justify-center hover:bg-ink transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </motion.div>
         );
@@ -139,8 +219,14 @@ function ShowcaseStack() {
       {/* progress dots */}
       <div className="absolute -bottom-9 left-0 right-0 flex justify-center gap-2">
         {SHOWCASE.map((_, idx) => (
-          <span
+          <button
             key={idx}
+            type="button"
+            onClick={() => {
+              if (playingIndex !== null) handleClosePlay();
+              setActive(idx);
+            }}
+            aria-label={`Show ${SHOWCASE[idx].label}`}
             className={`h-1.5 rounded-full transition-all duration-500 ${
               idx === active ? "w-7 bg-acid" : "w-1.5 bg-bone/25"
             }`}
@@ -288,17 +374,6 @@ export default function Hero() {
                 <span className="w-2 h-2 rounded-full bg-acid animate-pulse" />
                 <span className="text-xs font-semibold tracking-widest uppercase text-bone/80">Graphic Designer</span>
               </motion.div>
-{/* 
-              <div className="absolute z-30 -bottom-16 -left-8 hidden md:block animate-spin-slow" aria-hidden>
-                <svg viewBox="0 0 100 100" className="w-28 h-28">
-                  <defs>
-                    <path id="circ" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" />
-                  </defs>
-                  <text className="fill-bone/70" style={{ fontSize: 10.5, letterSpacing: 2.5 }}>
-                    <textPath href="#circ">OPEN FOR PROJECTS • DESIGN • MOTION •</textPath>
-                  </text>
-                </svg>
-              </div> */}
             </motion.div>
           </motion.div>
         </div>
@@ -317,18 +392,6 @@ export default function Hero() {
           <span className="text-xs tracking-[0.3em] uppercase">Scroll to explore</span>
         </motion.button>
       </div>
-
-      {/* <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 0.8 }}
-        className="absolute bottom-0 left-0 right-0 bg-acid text-ink py-3 md:py-4 -rotate-[0.5deg] scale-[1.02]"
-      >
-        <Marquee
-          items={["Graphic Design", "Video Editing", "Motion Graphics", "Social Media Design", "Branding", "Creative Direction"]}
-          itemClassName="font-display font-extrabold uppercase text-xl md:text-3xl tracking-tight"
-        />
-      </motion.div> */}
     </section>
   );
 }
