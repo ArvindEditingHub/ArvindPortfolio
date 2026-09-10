@@ -427,7 +427,7 @@ export const PROJECTS = [
     slug: "pro-edit",
     title: "Pro Edit Reel",
     category: "Motion Graphics",
-    cats: ["Motion Graphics", "Video Editing"],
+    cats: ["Motion Graphics"],
     // image: A("motion2"),
     tools: ["After Effects"],
     year: "2024",
@@ -494,7 +494,7 @@ export const PROJECTS = [
     slug: "video-edit-03",
     title: "Video Edit 03",
     category: "Motion Graphics",
-    cats: ["Motion Graphics", "Video Editing"],
+    cats: ["Motion Graphics",],
     image: A("travel2"),
     tools: ["Premiere Pro"],
     year: "2024",
@@ -510,7 +510,7 @@ export const PROJECTS = [
     slug: "video-edit-04",
     title: "Video Edit 04",
     category: "Motion Graphics",
-    cats: ["Motion Graphics", "Video Editing"],
+    cats: ["Motion Graphics"],
     image: A("travel2"),
     tools: ["Premiere Pro"],
     year: "2024",
@@ -522,11 +522,32 @@ export const PROJECTS = [
     gallery: [A("travel2"), A("travel3"), A("travel1")],
     video: "/assets/sex toys 5 types.mp4",
   },
+
+    // Motion Graphics Videos End Here
+
+    // Video Editing Tab Videos Start Here
+  {
+    slug: "video-edit-01",
+    title: "Video Edit 01",
+    category: "Video Editing",
+    cats: ["Video Editing"],
+    image: A("travel2"),
+    tools: ["Premiere Pro"],
+    year: "2024",
+    client: "Travel Creator",
+    tagline: "A coastline journey cut to the beat.",
+    description:
+      "A coastal travel reel following cliffside rails and turquoise water. Beat-matched cuts and natural sound design keep the viewer inside the journey.",
+    process: ["Synced the cut to the track", "Mixed natural ambience", "Stabilised and retimed clips", "Delivered vertical reel formats"],
+    gallery: [A("travel2"), A("travel3"), A("travel1")],
+    video: "https://youtu.be/yCd4yJgRRWk?si=KTqVl8OWsddYxKKn",
+  },
+
   {
     slug: "video-edit-05",
     title: "Video Edit 05",
-    category: "Motion Graphics",
-    cats: ["Motion Graphics", "Video Editing"],
+    category: "Video Editing",
+    cats: ["Video Editing"],
     image: A("travel2"),
     tools: ["Premiere Pro"],
     year: "2024",
@@ -538,15 +559,49 @@ export const PROJECTS = [
     gallery: [A("travel2"), A("travel3"), A("travel1")],
     video: "/assets/anal toysnew.mp4",
   },
+  {
+    slug: "video-edit-06",
+    title: "Video Edit 06",
+    category: "Video Editing",
+    cats: ["Video Editing"],
+    image: A("travel2"),
+    tools: ["Premiere Pro"],
+    year: "2024",
+    client: "Travel Creator",
+    tagline: "A coastline journey cut to the beat.",
+    description:
+      "A coastal travel reel following cliffside rails and turquoise water. Beat-matched cuts and natural sound design keep the viewer inside the journey.",
+    process: ["Synced the cut to the track", "Mixed natural ambience", "Stabilised and retimed clips", "Delivered vertical reel formats"],
+    gallery: [A("travel2"), A("travel3"), A("travel1")],
+    video: "/assets/Thrusting Anal Vibrator Remote Control Prostate Massager.mp4",
+  },
+  {
+    slug: "video-edit-07",
+    title: "Video Edit 07",
+    category: "Video Editing",
+    cats: ["Video Editing"],
+    image: A("travel2"),
+    tools: ["Premiere Pro"],
+    year: "2024",
+    client: "Travel Creator",
+    tagline: "A coastline journey cut to the beat.",
+    description:
+      "A coastal travel reel following cliffside rails and turquoise water. Beat-matched cuts and natural sound design keep the viewer inside the journey.",
+    process: ["Synced the cut to the track", "Mixed natural ambience", "Stabilised and retimed clips", "Delivered vertical reel formats"],
+    gallery: [A("travel2"), A("travel3"), A("travel1")],
+    video: "/assets/Sequence 0123.mp4",
+  },
 
-    // Motion Graphics Videos End Here
 
-    // Video Editing Tab Videos Start Here
+    // Video Editing Tab Videos End Here
+
+
+    // Video Editing Section Videos Start Here
   {
     slug: "aerial-garden",
     title: "Aerial Garden",
-    category: "Video Editing",
-    cats: ["Video Editing"],
+    category: "Video Showcase",
+    cats: ["Video Showcase"],
     image: A("travel1"),
     tools: ["Premiere Pro", "After Effects"],
     year: "2024",
@@ -561,8 +616,8 @@ export const PROJECTS = [
   {
     slug: "coastal-rails",
     title: "Coastal Rails",
-    category: "Video Editing",
-    cats: ["Video Editing"],
+    category: "Video Showcase",
+    cats: ["Video Showcase"],
     image: A("travel2"),
     tools: ["Premiere Pro"],
     year: "2024",
@@ -577,8 +632,8 @@ export const PROJECTS = [
   {
     slug: "travel-with-us",
     title: "Travel With Us",
-    category: "Video Editing",
-    cats: ["Video Editing"],
+    category: "Video Showcase",
+    cats: ["Video Showcase"],
     image: A("travel3"),
     tools: ["Premiere Pro", "After Effects"],
     year: "2024",
@@ -590,7 +645,7 @@ export const PROJECTS = [
     gallery: [A("travel3"), A("travel1"), A("travel2")],
     video: "https://razputeditz.my.canva.site/_assets/video/9d6eecff72b86957e63fa51f6d852792.mp4",
   },
-// Video Editing Tab Videos End Here
+// Video Editing Section Videos End Here
 ];
 
 export const getProject = (slug) => PROJECTS.find((p) => p.slug === slug);

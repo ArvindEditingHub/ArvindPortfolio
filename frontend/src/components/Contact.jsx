@@ -1,11 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 import { ArrowUpRight, Mail, Phone, Send, Loader2 } from "lucide-react";
 import Magnetic from "./Magnetic";
 import { Reveal, LineMask } from "./Reveal";
 
-const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
+// Web3Forms Access Key — .env file mein VITE_WEB3FORMS_KEY set karo
+// e.g. .env file mein likho: VITE_WEB3FORMS_KEY=tumhari-access-key-yahan
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -19,9 +20,29 @@ export default function Contact() {
     }
     setSending(true);
     try {
-      await axios.post(`${API}/contact`, form);
-      toast.success("Message sent — Arvind will get back to you soon!");
-      setForm({ name: "", email: "", message: "" });
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          subject: `New portfolio inquiry from ${form.name}`,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("Message sent — Arvind will get back to you soon!");
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        throw new Error(data.message || "Something went wrong");
+      }
     } catch {
       toast.error("Could not send right now — please email directly instead.");
     } finally {
@@ -58,7 +79,7 @@ export default function Contact() {
               <div className="mt-10 flex flex-wrap gap-4">
                 <Magnetic>
                   <a
-                    href="mailto:arvindbrandsaffair@gmail.com"
+                    href="mailto:editinghubarvind@gmail.com"
                     className="group inline-flex items-center gap-3 rounded-full bg-ink text-acid font-display font-bold px-8 py-4 text-sm md:text-base hover:bg-forest hover:text-bone transition-colors duration-300"
                     data-testid="contact-start-project-btn"
                   >
@@ -68,7 +89,7 @@ export default function Contact() {
                 </Magnetic>
                 <Magnetic>
                   <a
-                    href="tel:+917234887468"
+                    href="tel:+917009794869"
                     className="inline-flex items-center gap-3 rounded-full border-2 border-ink/30 text-ink font-display font-bold px-8 py-4 text-sm md:text-base hover:border-ink transition-colors duration-300"
                     data-testid="contact-call-btn"
                   >
@@ -100,6 +121,15 @@ export default function Contact() {
                   Drop a <span className="font-serif italic font-medium text-acid">line</span>
                 </h3>
                 <div className="space-y-5">
+                  {/* Honeypot field — spam bots ke liye trap, users ko nahi dikhta */}
+                  <input
+                    type="checkbox"
+                    name="botcheck"
+                    className="hidden"
+                    style={{ display: "none" }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
                   <div>
                     <label htmlFor="cf-name" className="text-[10px] tracking-[0.25em] uppercase text-bone/50">Your Name</label>
                     <input

@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Play } from "lucide-react";
+import { ArrowUpRight, Play, X } from "lucide-react";
+import { getYouTubeId, getYouTubeEmbedUrl, getYouTubeThumbnail } from "../utils/video";
 import { Reveal, LineMask } from "./Reveal";
 import { PROJECTS, CATEGORIES } from "../data/projects";
 
@@ -69,7 +70,15 @@ function VideoCard({ p }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Detect a YouTube link vs. a direct video file (mp4 etc.)
+  const youTubeId = getYouTubeId(p.video);
+
   const handlePlay = async () => {
+    if (youTubeId) {
+      // No native <video> element to control — just switch to the iframe.
+      setIsPlaying(true);
+      return;
+    }
     if (!videoRef.current) return;
     try {
       await videoRef.current.play();
@@ -81,67 +90,102 @@ function VideoCard({ p }) {
 
   const handlePause = () => setIsPlaying(false);
   const handleEnded = () => setIsPlaying(false);
+  const handleClose = () => setIsPlaying(false); // used for YouTube (no pause/ended events available)
+
+  const posterSrc = p.image || (youTubeId ? getYouTubeThumbnail(youTubeId) : undefined);
 
   return (
     <div
       className="group relative block w-full aspect-video overflow-hidden rounded-2xl bg-black"
       data-testid={`project-card-${p.slug}`}
     >
-      {/*
-        Single <video> element does double duty:
-        - Paused (before click) it shows the video's own first frame as the
-          thumbnail automatically (preload="metadata"), cropped with
-          object-cover to fill the box neatly — no manual `image` field needed.
-        - Once playing, it switches to object-contain so the full video is
-          visible without any cropping, still inside the same box.
-      */}
-      <video
-        ref={videoRef}
-        src={p.video}
-        preload="metadata"
-        playsInline
-        controls={isPlaying}
-        onPause={handlePause}
-        onEnded={handleEnded}
-        className={`absolute inset-0 w-full h-full bg-black ${
-          isPlaying ? "object-contain" : "object-cover"
-        }`}
-      />
+      {isPlaying && youTubeId ? (
+        // YouTube embed — plays right here in the box, no page navigation.
+        <>
+          <iframe
+            src={getYouTubeEmbedUrl(youTubeId)}
+            title={p.title}
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+          />
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Close video"
+            className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-ink/80 text-bone flex items-center justify-center hover:bg-ink transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </>
+      ) : (
+        <>
+          {/*
+            Direct video file (mp4 etc.): single <video> element does double
+            duty — paused it shows the first frame as a thumbnail
+            (preload="metadata"), cropped with object-cover to fill the box
+            neatly; once playing it switches to object-contain so the full
+            video is visible without cropping, still inside the same box.
+            For YouTube links (before play) we just show the poster image
+            (p.image if set, else YouTube's own thumbnail).
+          */}
+          {youTubeId ? (
+            <img
+              src={posterSrc}
+              alt={p.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              src={p.video}
+              preload="metadata"
+              playsInline
+              controls={isPlaying}
+              onPause={handlePause}
+              onEnded={handleEnded}
+              className={`absolute inset-0 w-full h-full bg-black ${
+                isPlaying ? "object-contain" : "object-cover"
+              }`}
+            />
+          )}
 
-      {/* Thumbnail overlay + play button (hidden once playing) */}
-      {!isPlaying && (
-        <button
-          type="button"
-          onClick={handlePlay}
-          data-cursor="view"
-          aria-label={`Play ${p.title}`}
-          className="absolute inset-0 z-10 w-full h-full text-left"
-        >
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
+          {/* Thumbnail overlay + play button (hidden once playing) */}
+          {!isPlaying && (
+            <button
+              type="button"
+              onClick={handlePlay}
+              data-cursor="view"
+              aria-label={`Play ${p.title}`}
+              className="absolute inset-0 z-10 w-full h-full text-left"
+            >
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
 
-          {/* Play button, centered */}
-          <span className="absolute inset-0 flex items-center justify-center">
-            <span className="w-16 h-16 rounded-full bg-acid text-ink flex items-center justify-center scale-90 group-hover:scale-100 transition-transform duration-300 shadow-lg">
-              <Play className="w-6 h-6 ml-0.5" fill="currentColor" />
-            </span>
-          </span>
+              {/* Play button, centered */}
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="w-16 h-16 rounded-full bg-acid text-ink flex items-center justify-center scale-90 group-hover:scale-100 transition-transform duration-300 shadow-lg">
+                  <Play className="w-6 h-6 ml-0.5" fill="currentColor" />
+                </span>
+              </span>
 
-          {/* Project Content */}
-          <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 text-left">
-            <span className="text-[10px] tracking-[0.25em] uppercase text-acid">
-              {p.category}
-            </span>
+              {/* Project Content */}
+              <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 text-left">
+                <span className="text-[10px] tracking-[0.25em] uppercase text-acid">
+                  {p.category}
+                </span>
 
-            <h3 className="font-display font-extrabold text-xl md:text-2xl text-bone tracking-tight mt-1">
-              {p.title}
-            </h3>
+                <h3 className="font-display font-extrabold text-xl md:text-2xl text-bone tracking-tight mt-1">
+                  {p.title}
+                </h3>
 
-            <p className="text-xs text-bone/50 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-1">
-              {p.tagline}
-            </p>
-          </div>
-        </button>
+                <p className="text-xs text-bone/50 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-1">
+                  {p.tagline}
+                </p>
+              </div>
+            </button>
+          )}
+        </>
       )}
     </div>
   );

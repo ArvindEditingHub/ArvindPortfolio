@@ -18,7 +18,7 @@ const ROLES = ["Graphic Designer", "Video Editor", "Motion Artist", "Brand Story
 // NOTE: no separate thumbnail image needed anymore — each video auto-generates
 // its own thumbnail from its first frame (see ShowcaseStack below).
 const SHOWCASE = [
-  { video: "https://razputeditz.my.canva.site/_assets/video/f246229076d469ff65bdfb72dfe3c5a1.mp4", label: "Motion Graphics", icon: Film },
+  { video: "https://razputeditz.my.canva.site/_assets/video/41c2b170f9bfa4ecbc091a366d728610.mp4", label: "Motion Graphics", icon: Film },
   { video: "/assets/travelcase.mp4", label: "Video Editing", icon: Play },
   { video: "/assets/leh ladakh .mp4", label: "Visual Design", icon: Palette },
 ];

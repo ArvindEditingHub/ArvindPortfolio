@@ -46,7 +46,7 @@ export default function ProjectPage() {
 
   if (!project) {
     return (
-      <main className="min-h-screen bg-ink flex items-center justify-center">
+      <main className="min-h-screen bg-ink flex items-center justify-center px-6">
         <div className="text-center">
           <p className="font-display font-extrabold text-4xl text-bone">Project not found</p>
           <Link to="/" className="mt-6 inline-block text-acid font-display font-bold" data-testid="not-found-home-link">
@@ -58,9 +58,14 @@ export default function ProjectPage() {
   }
 
   return (
-    <main className="bg-ink text-bone" data-testid="project-page">
+    <main className="bg-ink text-bone overflow-x-hidden" data-testid="project-page">
       <section className="relative overflow-hidden">
-        <div className="pt-10 md:pt-14 px-6 md:px-10 max-w-[90rem] mx-auto">
+        {/*
+          pt-28 / md:pt-36 pushes content below the fixed/sticky navbar so the
+          "All Work" link isn't hidden behind it. relative z-10 is a safety
+          net in case the navbar's stacking context ever overlaps this block.
+        */}
+        <div className="relative z-10 pt-28 md:pt-36 px-6 md:px-10 max-w-[90rem] mx-auto">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-xs tracking-[0.25em] uppercase text-bone/60 hover:text-acid transition-colors mb-8"
@@ -70,11 +75,11 @@ export default function ProjectPage() {
           </Link>
           <LineMask
             as="h1"
-            className="font-display font-extrabold uppercase tracking-tight leading-[0.9] text-5xl sm:text-6xl lg:text-8xl"
+            className="font-display font-extrabold uppercase tracking-tight leading-[0.9] text-4xl sm:text-6xl lg:text-8xl break-words"
             lines={[project.title]}
           />
           <Reveal delay={0.2}>
-            <p className="mt-4 font-serif italic text-xl md:text-2xl text-acid">{project.tagline}</p>
+            <p className="mt-4 font-serif italic text-lg md:text-2xl text-acid">{project.tagline}</p>
           </Reveal>
         </div>
 
@@ -98,7 +103,7 @@ export default function ProjectPage() {
       </section>
 
       <section className="max-w-[90rem] mx-auto px-6 md:px-10 py-16 md:py-24">
-        <div className="grid md:grid-cols-4 gap-8 pb-16 border-b border-white/10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-16 border-b border-white/10">
           {[
             ["Category", project.category],
             ["Client", project.client],
@@ -106,16 +111,16 @@ export default function ProjectPage() {
             ["Tools", project.tools.join(", ")],
           ].map(([k, v]) => (
             <Reveal key={k}>
-              <div data-testid={`project-meta-${k.toLowerCase()}`}>
+              <div data-testid={`project-meta-${k.toLowerCase()}`} className="min-w-0">
                 <div className="text-[10px] tracking-[0.3em] uppercase text-bone/40 mb-2">{k}</div>
-                <div className="font-display font-bold text-lg text-bone">{v}</div>
+                <div className="font-display font-bold text-lg text-bone break-words">{v}</div>
               </div>
             </Reveal>
           ))}
         </div>
 
         <div className="grid lg:grid-cols-12 gap-12 py-16 md:py-24">
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-7 min-w-0">
             <Reveal>
               <p className="text-xs tracking-[0.35em] uppercase text-bone/40 mb-6">— The Brief</p>
               <p className="text-lg md:text-2xl leading-relaxed text-bone/80 font-light" data-testid="project-description">
@@ -123,13 +128,13 @@ export default function ProjectPage() {
               </p>
             </Reveal>
           </div>
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 min-w-0">
             <Reveal delay={0.15}>
               <p className="text-xs tracking-[0.35em] uppercase text-bone/40 mb-6">— The Process</p>
               <ol className="space-y-0 border-t border-white/10">
                 {project.process.map((step, i) => (
                   <li key={i} className="flex items-baseline gap-5 py-4 border-b border-white/10" data-testid={`project-process-${i}`}>
-                    <span className="font-display font-extrabold text-sm text-acid">0{i + 1}</span>
+                    <span className="font-display font-extrabold text-sm text-acid shrink-0">0{i + 1}</span>
                     <span className="text-sm md:text-base text-bone/65">{step}</span>
                   </li>
                 ))}
@@ -168,10 +173,15 @@ export default function ProjectPage() {
               <button
                 type="button"
                 onClick={() => setLightboxIndex(0)}
-                className="block w-full h-full rounded-2xl overflow-hidden cursor-zoom-in group relative"
+                className="block w-full aspect-[4/3] md:aspect-auto md:h-full rounded-2xl overflow-hidden cursor-zoom-in group relative"
                 data-testid="project-gallery-item-0"
               >
-                <img src={project.gallery[0]} alt={`${project.title} artwork 1`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img
+                  src={project.gallery[0]}
+                  alt={`${project.title} artwork 1`}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
                 <span className="absolute inset-0 bg-ink/0 group-hover:bg-ink/20 transition-colors duration-500" />
               </button>
             </Reveal>
@@ -181,10 +191,15 @@ export default function ProjectPage() {
                   <button
                     type="button"
                     onClick={() => setLightboxIndex(i + 1)}
-                    className="block w-full h-full rounded-2xl overflow-hidden cursor-zoom-in group relative"
+                    className="block w-full aspect-square md:aspect-auto md:h-full rounded-2xl overflow-hidden cursor-zoom-in group relative"
                     data-testid={`project-gallery-item-${i + 1}`}
                   >
-                    <img src={g} alt={`${project.title} artwork ${i + 2}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img
+                      src={g}
+                      alt={`${project.title} artwork ${i + 2}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
                     <span className="absolute inset-0 bg-ink/0 group-hover:bg-ink/20 transition-colors duration-500" />
                   </button>
                 </Reveal>
@@ -259,23 +274,23 @@ export default function ProjectPage() {
 
       <Link
         to={`/project/${next.slug}`}
-        className="group relative block py-24 md:py-36 bg-coal hover:bg-acid transition-colors duration-700 overflow-hidden"
+        className="group relative block py-20 md:py-36 bg-coal hover:bg-acid transition-colors duration-700 overflow-hidden"
         data-testid="next-project-link"
       >
-        <div className="max-w-[90rem] mx-auto px-6 md:px-10 flex items-center justify-between gap-6">
-          <div>
+        <div className="max-w-[90rem] mx-auto px-6 md:px-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 sm:gap-6">
+          <div className="min-w-0">
             <span className="text-xs tracking-[0.35em] uppercase text-bone/40 group-hover:text-ink/60 transition-colors duration-500">
               Next Project
             </span>
-            <h2 className="mt-4 font-display font-extrabold uppercase tracking-tight leading-[0.9] text-4xl sm:text-6xl lg:text-8xl text-bone group-hover:text-ink transition-colors duration-500">
+            <h2 className="mt-4 font-display font-extrabold uppercase tracking-tight leading-[0.9] text-3xl sm:text-6xl lg:text-8xl text-bone group-hover:text-ink transition-colors duration-500 break-words">
               {next.title}
             </h2>
             <span className="mt-4 inline-block font-serif italic text-lg md:text-xl text-acid group-hover:text-ink/70 transition-colors duration-500">
               {next.category}
             </span>
           </div>
-          <span className="shrink-0 w-16 h-16 md:w-24 md:h-24 rounded-full border border-bone/25 group-hover:border-ink group-hover:bg-ink group-hover:text-acid text-bone flex items-center justify-center transition-all duration-500 group-hover:rotate-45">
-            <ArrowRight className="w-6 h-6 md:w-8 md:h-8" />
+          <span className="shrink-0 self-start sm:self-auto w-14 h-14 md:w-24 md:h-24 rounded-full border border-bone/25 group-hover:border-ink group-hover:bg-ink group-hover:text-acid text-bone flex items-center justify-center transition-all duration-500 group-hover:rotate-45">
+            <ArrowRight className="w-5 h-5 md:w-8 md:h-8" />
           </span>
         </div>
       </Link>

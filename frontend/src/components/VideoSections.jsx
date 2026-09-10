@@ -6,13 +6,15 @@ import { PROJECTS } from "../data/projects";
 
 const EDITS = PROJECTS.filter(
   (p) =>
-    p.cats.includes("Video Editing") &&
+    p.cats.includes("Video Showcase") &&
     !p.cats.includes("Motion Graphics")
 );
 
 const MOTION = PROJECTS.filter((p) =>
   p.cats.includes("Motion Graphics")
 );
+
+
 
 // How fast the motion-graphics row auto-scrolls, in pixels per frame.
 const AUTO_SCROLL_SPEED = 0.6;
@@ -308,7 +310,7 @@ export default function VideoSections() {
                 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl sm:text-5xl lg:text-6xl"
                 lines={[
                   <>
-                    Selected{" "}
+                    Travel{" "}
                     <span className="font-serif italic font-medium normal-case text-forest">
                       cuts
                     </span>
@@ -326,33 +328,31 @@ export default function VideoSections() {
           </div>
 
           {/* Video Grid */}
-          {feature && (
-            <div className="grid lg:grid-cols-12 gap-6">
+          {/* Video Grid */}
+{feature && (
+  <div className="grid lg:grid-cols-12 gap-6 min-w-0">
 
-              {/* Featured Video */}
-              <Reveal className="lg:col-span-7">
-                <VideoCard
-                  video={feature}
-                  className="w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[400px]"
-                />
-              </Reveal>
+    {/* Featured Video */}
+    <Reveal className="lg:col-span-7 min-w-0">
+      <VideoCard
+        video={feature}
+        className="w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[400px]"
+      />
+    </Reveal>
 
-              {/* Smaller Videos */}
-              <div className="lg:col-span-5 grid gap-6">
-                {rest.map((v, i) => (
-                  <Reveal
-                    key={v.slug}
-                    delay={0.1 + i * 0.1}
-                  >
-                    <VideoCard
-                      video={v}
-                      className="w-full aspect-[16/9]"
-                    />
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          )}
+    {/* Smaller Videos */}
+    <div className="lg:col-span-5 grid gap-6 min-w-0">
+      {rest.map((v, i) => (
+        <Reveal key={v.slug} delay={0.1 + i * 0.1} className="min-w-0">
+          <VideoCard
+            video={v}
+            className="w-full aspect-[16/9]"
+          />
+        </Reveal>
+      ))}
+    </div>
+  </div>
+)}
         </div>
       </section>
 
