@@ -59,8 +59,14 @@ export default function Nav() {
             className="font-display font-800 text-lg md:text-xl font-extrabold tracking-tight text-bone"
             data-testid="nav-logo"
           >
-            AR<span className="text-acid">.</span>RAJPUT
+            {/* AR<span className="text-acid">.</span>RAJPUT */}
+            <img
+    src="/assets/Arvind_Logo.png"
+    alt="AR. Rajput"
+    className="h-8 md:h-20 w-auto object-contain"
+  />
           </button>
+          
 
           <nav className="hidden md:flex items-center gap-8">
             {LINKS.map((l) => (

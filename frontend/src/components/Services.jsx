@@ -10,7 +10,7 @@ const SERVICES = [
     desc: "Posters, brand identities and print-ready artwork with strong visual hierarchy.",
     skills: ["Poster Design", "Branding", "Typography", "Layout"],
     icon: PenTool,
-    image: "/assets/proj_armguards.png",
+    image: "/assets/Graphics_Design.png",
   },
   {
     n: "02",
@@ -18,7 +18,7 @@ const SERVICES = [
     desc: "Cuts, colour and rhythm — edits that keep viewers watching till the last frame.",
     skills: ["Reels", "YouTube", "Color Grading", "Sound Design"],
     icon: Clapperboard,
-    image: "/assets/travel2.png",
+    image: "/assets/Video_Editing.png",
   },
   {
     n: "03",
@@ -26,7 +26,7 @@ const SERVICES = [
     desc: "Type in motion, logo animation and animated stories that move people.",
     skills: ["Kinetic Type", "Logo Animation", "Transitions", "2D Animation"],
     icon: Sparkles,
-    image: "/assets/motion1.png",
+    image: "/assets/Motion_Graphics.png",
   },
   {
     n: "04",
@@ -34,7 +34,7 @@ const SERVICES = [
     desc: "Scroll-stopping creatives for feeds, stories and full campaigns.",
     skills: ["Instagram Posts", "Stories", "Ad Creatives", "Campaigns"],
     icon: MonitorSmartphone,
-    image: "/assets/social_mockup.png",
+    image: "/assets/Social_Media_Design.png",
   },
 ];
 

@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { scrollToSection } from "./Nav";
 
 const SOCIALS = [
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com" },
-  { icon: Youtube, label: "YouTube", href: "https://youtube.com" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/arvindrajputvideoediting/" },
+  { icon: Youtube, label: "YouTube", href: "https://www.youtube.com/@arvindrajputvideoediting" },
   { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com" },
   { icon: Dribbble, label: "Dribbble", href: "https://dribbble.com" },
 ];
@@ -101,18 +101,18 @@ export default function Footer() {
           <div className="md:col-span-3">
             <h4 className="text-[10px] tracking-[0.3em] uppercase text-bone/40 mb-5">Get in touch</h4>
             <a
-              href="mailto:arvindbrandsaffair@gmail.com"
+              href="mailto:editinghubarvind@gmail.com"
               className="flex items-center gap-3 text-sm text-bone/60 hover:text-acid transition-colors mb-3"
               data-testid="footer-email"
             >
-              <Mail className="w-4 h-4 shrink-0" /> arvindbrandsaffair@gmail.com
+              <Mail className="w-4 h-4 shrink-0" /> editinghubarvind@gmail.com
             </a>
             <a
-              href="tel:+917234887468"
+              href="tel:+917009794869"
               className="flex items-center gap-3 text-sm text-bone/60 hover:text-acid transition-colors"
               data-testid="footer-phone"
             >
-              <Phone className="w-4 h-4 shrink-0" /> +91 72348 87468
+              <Phone className="w-4 h-4 shrink-0" /> +91 70097 94869
             </a>
           </div>
         </div>

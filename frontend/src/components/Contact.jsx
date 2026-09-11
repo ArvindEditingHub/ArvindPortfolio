@@ -93,19 +93,19 @@ export default function Contact() {
                     className="inline-flex items-center gap-3 rounded-full border-2 border-ink/30 text-ink font-display font-bold px-8 py-4 text-sm md:text-base hover:border-ink transition-colors duration-300"
                     data-testid="contact-call-btn"
                   >
-                    <Phone className="w-4 h-4" /> +91 72348 87468
+                    <Phone className="w-4 h-4" /> +91 70097 94869
                   </a>
                 </Magnetic>
               </div>
             </Reveal>
             <Reveal delay={0.4}>
               <a
-                href="mailto:arvindbrandsaffair@gmail.com"
+                href="mailto:editinghubarvind@gmail.com"
                 className="mt-10 inline-flex items-center gap-3 text-ink/70 hover:text-ink transition-colors"
                 data-testid="contact-email-link"
               >
                 <Mail className="w-4 h-4" />
-                <span className="text-sm md:text-base font-medium">arvindbrandsaffair@gmail.com</span>
+                <span className="text-sm md:text-base font-medium">editinghubarvind@gmail.com</span>
               </a>
             </Reveal>
           </div>
