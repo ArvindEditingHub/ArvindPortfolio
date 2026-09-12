@@ -12,6 +12,19 @@ const LINKS = [
   { label: "Contact", id: "contact" },
 ];
 
+// "home" maps to the root path "/"; every other section maps to "/<id>",
+// e.g. "about" -> "/about".
+const pathFor = (id) => (id === "home" ? "/" : `/${id}`);
+const idFromPath = (pathname) => {
+  const clean = pathname.replace(/^\/+/, ""); // strip leading slash(es)
+  return clean === "" ? "home" : clean;
+};
+
+// Exported so App.jsx's ScrollManager can tell "moving between sections
+// of the single page" apart from "navigating to a genuinely different
+// page" (like /project/:slug) — without duplicating this list there.
+export const SECTION_PATHS = LINKS.map((l) => pathFor(l.id));
+
 export const scrollToSection = (id) => {
   const el = document.getElementById(id);
   if (!el) return;
@@ -22,8 +35,14 @@ export const scrollToSection = (id) => {
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [activeId, setActiveId] = useState(() => idFromPath(window.location.pathname));
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Only run the section-tracking behaviour (scroll-spy, initial scroll,
+  // etc.) when we're actually on one of the single-page section routes —
+  // i.e. not on something like /project/:slug.
+  const isSectionRoute = SECTION_PATHS.includes(location.pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -31,12 +50,59 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // On first load (or a hard refresh) at a clean path like /about, scroll
+  // to that section once the page has settled.
+  useEffect(() => {
+    if (!isSectionRoute) return;
+    const id = idFromPath(location.pathname);
+    if (id === "home") return;
+    const t = setTimeout(() => scrollToSection(id), 150);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Scroll-spy: as the user scrolls (not just clicks), keep the URL path
+  // and the highlighted nav link in sync with whichever section is
+  // currently in view. Uses `replace` so scrolling doesn't spam browser
+  // history — only explicit clicks (via `go`) add a new history entry.
+  useEffect(() => {
+    if (!isSectionRoute) return;
+
+    const sections = LINKS.map((l) => document.getElementById(l.id)).filter(Boolean);
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            setActiveId(id);
+            if (location.pathname !== pathFor(id)) {
+              navigate(pathFor(id), { replace: true });
+            }
+          }
+        });
+      },
+      // Counts a section as "current" once it crosses the middle band of
+      // the viewport, rather than only when fully in view.
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSectionRoute]);
+
   const go = (id) => {
     setOpen(false);
-    if (location.pathname !== "/") {
-      navigate("/", { state: { scrollTo: id } });
+    if (!isSectionRoute) {
+      // Coming from another page (e.g. /project/:slug) — navigate home
+      // and let that page handle scrolling once it mounts.
+      navigate(pathFor(id), { state: { scrollTo: id } });
     } else {
       scrollToSection(id);
+      setActiveId(id);
+      navigate(pathFor(id));
     }
   };
 
@@ -73,11 +139,17 @@ export default function Nav() {
               <button
                 key={l.id}
                 onClick={() => go(l.id)}
-                className="group relative text-sm font-medium tracking-wide text-bone/70 hover:text-bone transition-colors duration-300"
+                className={`group relative text-sm font-medium tracking-wide transition-colors duration-300 ${
+                  activeId === l.id ? "text-bone" : "text-bone/70 hover:text-bone"
+                }`}
                 data-testid={`nav-${l.id}-link`}
               >
                 {l.label}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-acid transition-all duration-300 group-hover:w-full" />
+                <span
+                  className={`absolute -bottom-1 left-0 h-px bg-acid transition-all duration-300 ${
+                    activeId === l.id ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
               </button>
             ))}
           </nav>
@@ -135,7 +207,9 @@ export default function Nav() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + i * 0.07, duration: 0.5 }}
                   onClick={() => go(l.id)}
-                  className="text-left font-display font-extrabold uppercase text-4xl text-bone/90 hover:text-acid transition-colors py-2"
+                  className={`text-left font-display font-extrabold uppercase text-4xl transition-colors py-2 ${
+                    activeId === l.id ? "text-acid" : "text-bone/90 hover:text-acid"
+                  }`}
                   data-testid={`mobile-nav-${l.id}-link`}
                 >
                   {l.label}
