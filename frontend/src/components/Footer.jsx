@@ -45,7 +45,12 @@ export default function Footer() {
         <div className="grid md:grid-cols-12 gap-10 pb-16 border-b border-white/10">
           <div className="md:col-span-4">
             <div className="font-display font-extrabold text-xl text-bone">
-              AR<span className="text-acid">.</span>RAJPUT
+              {/* AR<span className="text-acid">.</span>RAJPUT */}
+               <img
+    src="/assets/Arvind_Logo.png"
+    alt="AR. Rajput"
+    className="h-8 md:h-20 w-auto object-contain"
+  />
             </div>
             <p className="mt-4 text-sm text-bone/45 max-w-xs leading-relaxed">
               Arvind Rajput — Graphic Designer & Video Editor crafting visuals
