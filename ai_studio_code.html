@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARVIND EDITING HUB // Motion, Video & Graphic Studio</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Syne (Display), Space Grotesk (Body), JetBrains Mono (Timecodes) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            acid: '#ccff00',
+            void: '#050507',
+            surface: '#0d0d12',
+            electric: '#7c3aed',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --acid: #ccff00;
+      --electric: #7c3aed;
+      --void: #050507;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--void);
+      color: #f4f4f0;
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Hide default cursor on desktop when custom cursor is active */
+    @media (pointer: fine) {
+      body { cursor: none; }
+      a, button, input, textarea, select, .cursor-target { cursor: none; }
+    }
+
+    /* Subtle Animated Film Grain Overlay */
+    .film-grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 0);
+      background-size: 24px 24px;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 90;
+      animation: grainShift 0.4s steps(2) infinite;
+    }
+    @keyframes grainShift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(-8px, 6px); }
+      100% { transform: translate(6px, -6px); }
+    }
+
+    /* Custom Cursor */
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--acid);
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s ease, height 0.25s ease, background 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: #000;
+    }
+    #custom-cursor.hovered {
+      width: 48px;
+      height: 48px;
+      background: rgba(204, 255, 0, 0.9);
+      mix-blend-mode: normal;
+    }
+    #custom-cursor.view-mode {
+      width: 82px;
+      height: 82px;
+      background: var(--acid);
+      mix-blend-mode: normal;
+      color: #050507;
+    }
+    @media (pointer: coarse) {
+      #custom-cursor { display: none !important; }
+    }
+
+    /* Infinite Marquee */
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marqueeLeft 22s linear infinite;
+    }
+    .marquee-track-reverse {
+      display: flex;
+      width: max-content;
+      animation: marqueeRight 24s linear infinite;
+    }
+    .marquee-wrap:hover .marquee-track,
+    .marquee-wrap:hover .marquee-track-reverse {
+      animation-play-state: paused;
+    }
+    @keyframes marqueeLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes marqueeRight {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Text Outline Effect */
+    .text-stroke {
+      -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
+      color: transparent;
+      transition: all 0.35s ease;
+    }
+    .text-stroke:hover {
+      -webkit-text-stroke: 1.5px var(--acid);
+      color: var(--acid);
+    }
+
+    /* Interactive Glow Mesh */
+    #mouse-glow {
+      position: fixed;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.22) 0%, rgba(204, 255, 0, 0.06) 45%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      filter: blur(40px);
+    }
+
+    /* 3D Tilt Card */
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out, border-color 0.3s ease;
+    }
+    .tilt-card:hover {
+      border-color: var(--acid);
+    }
+
+    /* Service Accordion Row */
+    .service-row {
+      transition: background-color 0.3s ease, padding 0.3s ease;
+    }
+    .service-row:hover {
+      background: rgba(204, 255, 0, 0.04);
+    }
+
+    /* Glitch Hover Animation */
+    .glitch-hover:hover {
+      animation: glitchJitter 0.28s steps(2) 2;
+    }
+    @keyframes glitchJitter {
+      0% { transform: translate(0); text-shadow: -2px 0 #ccff00, 2px 0 #7c3aed; }
+      50% { transform: translate(2px, -1px); text-shadow: 2px 0 #06b6d4, -2px 0 #ccff00; }
+      100% { transform: translate(0); text-shadow: none; }
+    }
+
+    /* Before/After Color Grade Slider */
+    .compare-container {
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+    .compare-raw {
+      filter: saturate(0.32) contrast(0.75) brightness(0.92) sepia(0.08);
+    }
+    .compare-graded {
+      filter: saturate(1.38) contrast(1.2) brightness(1.05);
+    }
+  </style>
+</head>
+<body class="selection:bg-acid selection:text-void">
+
+  <!-- Film Grain & Mouse Glow & Custom Cursor -->
+  <div class="film-grain"></div>
+  <div id="mouse-glow"></div>
+  <div id="custom-cursor"></div>
+
+  <!-- ==================== CINEMATIC PRELOADER ==================== -->
+  <div id="preloader" class="fixed inset-0 z-[100] bg-void flex flex-col justify-between p-6 sm:p-12 border-b border-acid/30">
+    <div class="flex justify-between items-center font-mono text-xs text-zinc-400">
+      <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span> REC // STUDIO INIT</span>
+      <span>FPS: 60.00 // 4K</span>
+    </div>
+
+    <div class="max-w-3xl">
+      <div class="font-mono text-xs text-acid uppercase tracking-widest mb-3">Loading Creative Timeline</div>
+      <h2 class="font-display text-3xl sm:text-6xl font-extrabold uppercase tracking-tight text-white">
+        Arvind <span class="text-acid">Editing Hub</span>
+      </h2>
+      <div class="mt-6 w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+        <div id="loader-bar" class="h-full w-0 bg-gradient-to-r from-electric via-cyan-400 to-acid"></div>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-end font-mono text-xs text-zinc-500">
+      <span>VIDEO EDITING & GRAPHIC DESIGN</span>
+      <span id="loader-percent" class="text-2xl sm:text-4xl font-bold text-white">00%</span>
+    </div>
+  </div>
+
+  <!-- ==================== HUD NAVBAR ==================== -->
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-void/75 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group magnetic">
+        <div class="w-10 h-10 rounded-lg bg-acid text-void flex items-center justify-center font-display font-extrabold text-lg group-hover:rotate-12 transition-transform">
+          AE
+        </div>
+        <div>
+          <div class="font-display font-bold text-base sm:text-lg tracking-tight text-white leading-none">ARVIND</div>
+          <div class="font-mono text-[10px] tracking-[0.2em] text-acid uppercase mt-0.5">Editing Hub</div>
+        </div>
+      </a>
+
+      <!-- Live Timecode HUD (Desktop) -->
+      <div class="hidden lg:flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 font-mono text-xs text-zinc-300">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        <span>REC</span>
+        <span id="live-timecode" class="text-acid font-semibold">00:00:00:00</span>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-300">
+        <a href="#services" class="hover:text-acid transition glitch-hover">Services</a>
+        <a href="#colorlab" class="hover:text-acid transition glitch-hover">Grade Lab</a>
+        <a href="#portfolio" class="hover:text-acid transition glitch-hover">Work</a>
+        <a href="#timeline" class="hover:text-acid transition glitch-hover">Workflow</a>
+        <a href="#pricing" class="hover:text-acid transition glitch-hover">Pricing</a>
+        <a href="#contact" class="magnetic px-5 py-2.5 rounded-full bg-acid text-void font-bold text-xs uppercase tracking-wider hover:bg-white transition">
+          Start Project ↗
+        </a>
+      </nav>
+
+      <!-- Mobile Toggle -->
+      <button id="menu-toggle" class="md:hidden text-white text-2xl p-2">
+        <i class="fa-solid fa-bars-staggered"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer" class="hidden md:hidden bg-void/95 border-b border-white/10 px-6 py-6 space-y-4 font-display text-xl">
+      <a href="#services" class="block text-white hover:text-acid mobile-nav-link">01. Services</a>
+      <a href="#colorlab" class="block text-white hover:text-acid mobile-nav-link">02. Grade Lab</a>
+      <a href="#portfolio" class="block text-white hover:text-acid mobile-nav-link">03. Portfolio</a>
+      <a href="#timeline" class="block text-white hover:text-acid mobile-nav-link">04. Workflow</a>
+      <a href="#pricing" class="block text-white hover:text-acid mobile-nav-link">05. Pricing</a>
+      <a href="#contact" class="block text-center py-3 rounded-full bg-acid text-void font-bold text-base mobile-nav-link">Book a Project ↗</a>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="relative min-h-screen pt-32 pb-20 flex flex-col justify-center overflow-hidden">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+
+      <!-- Top Meta Badges -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8 hero-reveal">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-acid/40 bg-acid/10 font-mono text-xs text-acid">
+          <span class="w-2 h-2 rounded-full bg-acid animate-ping"></span>
+          OPEN FOR FREELANCE & RETAINERS
+        </div>
+        <div class="font-mono text-xs text-zinc-400 hidden sm:block">
+          [ PREMIERE PRO • AFTER EFFECTS • DAVINCI • PHOTOSHOP ]
+        </div>
+      </div>
+
+      <!-- Kinetic Hero Headline -->
+      <div class="space-y-2">
+        <div class="overflow-hidden">
+          <h1 class="hero-line font-display text-5xl sm:text-7xl lg:text-[6.2rem] font-extrabold uppercase leading-[0.95] tracking-tight text-white">
+            We Cut <span class="text-stroke">Attention.</span>
+          </h1>
+        </div>
+        <div class="overflow-hidden">
+          <h1 class="hero-line font-display text-5xl sm:text-7xl lg:text-[6.2rem] font-extrabold uppercase leading-[0.95] tracking-tight text-white">
+            We Design <span class="text-acid">Impact.</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Hero Split Content + Interactive Reel Preview Box -->
+      <div class="mt-12 grid lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-6 space-y-6 hero-reveal">
+          <p class="text-zinc-300 text-base sm:text-lg leading-relaxed max-w-xl">
+            Welcome to <strong class="text-white">Arvind Editing Hub</strong> — a high-octane freelance studio crafting viral video edits, kinetic motion graphics, cinematic color grades, and high-CTR brand visuals.
+          </p>
+
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#portfolio" class="magnetic px-8 py-4 rounded-full bg-acid text-void font-bold text-sm uppercase tracking-wider hover:bg-white transition flex items-center gap-2 shadow-[0_0_30px_rgba(204,255,0,0.3)]">
+              <i class="fa-solid fa-play"></i> Watch Showcase
+            </a>
+            <a href="#contact" class="magnetic px-8 py-4 rounded-full border border-white/20 text-white font-bold text-sm uppercase tracking-wider hover:border-acid hover:text-acid transition">
+              Get a Quote
+            </a>
+          </div>
+
+          <!-- Quick Numbers -->
+          <div class="pt-6 grid grid-cols-3 gap-4 border-t border-white/10 max-w-md">
+            <div>
+              <div class="font-display text-2xl sm:text-3xl font-extrabold text-white">250+</div>
+              <div class="font-mono text-[11px] text-zinc-400 uppercase">Videos Cut</div>
+            </div>
+            <div>
+              <div class="font-display text-2xl sm:text-3xl font-extrabold text-acid">180+</div>
+              <div class="font-mono text-[11px] text-zinc-400 uppercase">Designs Built</div>
+            </div>
+            <div>
+              <div class="font-display text-2xl sm:text-3xl font-extrabold text-white">48H</div>
+              <div class="font-mono text-[11px] text-zinc-400 uppercase">Fast Delivery</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Animated Interactive Viewfinder Card -->
+        <div class="lg:col-span-6 hero-reveal">
+          <div class="tilt-card relative rounded-2xl border border-white/15 bg-surface p-3 shadow-2xl" data-cursor="VIEW">
+            <!-- Viewfinder Corners -->
+            <div class="relative rounded-xl overflow-hidden aspect-video bg-zinc-900">
+              <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1000&q=80" alt="Studio Showreel" class="w-full h-full object-cover opacity-80">
+              <div class="absolute inset-0 bg-gradient-to-tr from-void/90 via-transparent to-electric/30"></div>
+
+              <!-- Viewfinder Overlay HUD -->
+              <div class="absolute top-3 left-3 right-3 flex justify-between font-mono text-[10px] text-white/80">
+                <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10">CAM_A // 4K_PRO_RES</span>
+                <span class="px-2 py-0.5 rounded bg-red-600/80 text-white flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE</span>
+              </div>
+
+              <!-- Center Play Button -->
+              <a href="#portfolio" class="absolute inset-0 flex items-center justify-center group">
+                <div class="w-20 h-20 rounded-full bg-acid/95 text-void flex items-center justify-center text-2xl shadow-2xl group-hover:scale-110 transition duration-300">
+                  <i class="fa-solid fa-play ml-1"></i>
+                </div>
+              </a>
+
+              <!-- Fake Animated Timeline Playhead Bar -->
+              <div class="absolute bottom-0 left-0 right-0 p-3 bg-black/70 backdrop-blur-sm border-t border-white/10">
+                <div class="flex items-center justify-between font-mono text-[10px] text-zinc-300 mb-1.5">
+                  <span>ARVIND_HUB_SHOWREEL_2026.MP4</span>
+                  <span class="text-acid">60 FPS</span>
+                </div>
+                <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-acid rounded-full animate-[pulse_2s_ease-in-out_infinite]" style="width: 68%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== DUAL KINETIC MARQUEES ==================== -->
+  <section class="py-6 overflow-hidden border-y border-white/10 bg-surface marquee-wrap">
+    <div class="marquee-track font-display text-2xl sm:text-4xl font-extrabold uppercase tracking-wider text-white">
+      <span class="mx-6">Video Editing <span class="text-acid">✦</span></span>
+      <span class="mx-6">Reels & Shorts <span class="text-electric">✦</span></span>
+      <span class="mx-6">Motion Graphics <span class="text-acid">✦</span></span>
+      <span class="mx-6">Color Grading <span class="text-electric">✦</span></span>
+      <span class="mx-6">YouTube Thumbnails <span class="text-acid">✦</span></span>
+      <span class="mx-6">Brand Identity <span class="text-electric">✦</span></span>
+      <!-- Duplicate for seamless loop -->
+      <span class="mx-6">Video Editing <span class="text-acid">✦</span></span>
+      <span class="mx-6">Reels & Shorts <span class="text-electric">✦</span></span>
+      <span class="mx-6">Motion Graphics <span class="text-acid">✦</span></span>
+      <span class="mx-6">Color Grading <span class="text-electric">✦</span></span>
+      <span class="mx-6">YouTube Thumbnails <span class="text-acid">✦</span></span>
+      <span class="mx-6">Brand Identity <span class="text-electric">✦</span></span>
+    </div>
+
+    <div class="marquee-track-reverse font-mono text-sm sm:text-base uppercase tracking-[0.25em] text-zinc-400 mt-3">
+      <span class="mx-6">PREMIERE PRO • AFTER EFFECTS • DAVINCI RESOLVE • PHOTOSHOP • ILLUSTRATOR • SOUND DESIGN •</span>
+      <span class="mx-6">PREMIERE PRO • AFTER EFFECTS • DAVINCI RESOLVE • PHOTOSHOP • ILLUSTRATOR • SOUND DESIGN •</span>
+      <span class="mx-6">PREMIERE PRO • AFTER EFFECTS • DAVINCI RESOLVE • PHOTOSHOP • ILLUSTRATOR • SOUND DESIGN •</span>
+    </div>
+  </section>
+
+  <!-- ==================== INTERACTIVE COLOR & EDIT LAB ==================== -->
+  <section id="colorlab" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 gs-fade">
+        <div>
+          <span class="font-mono text-xs text-acid uppercase tracking-widest">// Interactive Demo</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white mt-2">
+            Raw Footage <span class="text-stroke">vs.</span> Studio Grade
+          </h2>
+        </div>
+        <p class="text-sm text-zinc-400 max-w-md">
+          Drag the slider left or right to experience how Arvind Editing Hub transforms flat raw footage into cinematic, high-contrast visual storytelling.
+        </p>
+      </div>
+
+      <!-- Interactive Comparison Box -->
+      <div class="compare-container rounded-3xl border border-white/15 h-[340px] sm:h-[480px] relative shadow-2xl gs-fade" id="compare-box">
+        <!-- Graded Layer (Full Width Underneath) -->
+        <div class="absolute inset-0">
+          <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1400&q=85" alt="Color Graded Scene" class="w-full h-full object-cover compare-graded">
+          <div class="absolute inset-0 bg-gradient-to-tr from-electric/25 via-transparent to-cyan-400/20 mix-blend-overlay"></div>
+          <span class="absolute bottom-5 right-5 px-3.5 py-1.5 rounded-full bg-acid text-void font-mono text-xs font-bold uppercase shadow-lg">
+            ARVIND HUB // GRADED + FX
+          </span>
+        </div>
+
+        <!-- Raw Layer (Clipped on Left) -->
+        <div id="compare-overlay" class="absolute inset-0 overflow-hidden" style="width: 50%;">
+          <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1400&q=85" alt="Raw Log Footage" class="w-full h-full object-cover compare-raw max-w-none" id="raw-img">
+          <span class="absolute bottom-5 left-5 px-3.5 py-1.5 rounded-full bg-black/80 border border-white/20 text-zinc-300 font-mono text-xs uppercase">
+            RAW LOG FOOTAGE
+          </span>
+        </div>
+
+        <!-- Draggable Divider Handle -->
+        <div id="compare-handle" class="absolute top-0 bottom-0 w-1 bg-acid z-20 cursor-ew-resize" style="left: 50%;">
+          <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 rounded-full bg-acid text-void flex items-center justify-center font-bold shadow-[0_0_25px_rgba(204,255,0,0.8)]">
+            <i class="fa-solid fa-arrows-left-right text-sm"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== KINETIC SERVICES LIST ==================== -->
+  <section id="services" class="py-24 bg-surface border-y border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-14 gs-fade">
+        <span class="font-mono text-xs text-acid uppercase tracking-widest">// Capabilities</span>
+        <h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white mt-2">What We Craft</h2>
+      </div>
+
+      <div class="divide-y divide-white/10 border-y border-white/10">
+        <!-- Service 01 -->
+        <div class="service-row py-8 px-4 sm:px-6 grid md:grid-cols-12 gap-4 items-center gs-fade">
+          <div class="md:col-span-1 font-mono text-acid text-sm font-bold">01</div>
+          <div class="md:col-span-5">
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase">Viral Reels & Shorts</h3>
+          </div>
+          <div class="md:col-span-4 text-sm text-zinc-400">
+            Fast-paced hooks, dynamic animated captions, sound effects, and retention editing engineered for Instagram & YouTube Shorts.
+          </div>
+          <div class="md:col-span-2 flex md:justify-end">
+            <span class="px-3 py-1 rounded-full border border-white/15 font-mono text-xs text-zinc-300">VIDEO EDIT</span>
+          </div>
+        </div>
+
+        <!-- Service 02 -->
+        <div class="service-row py-8 px-4 sm:px-6 grid md:grid-cols-12 gap-4 items-center gs-fade">
+          <div class="md:col-span-1 font-mono text-acid text-sm font-bold">02</div>
+          <div class="md:col-span-5">
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase">YouTube & Commercials</h3>
+          </div>
+          <div class="md:col-span-4 text-sm text-zinc-400">
+            Documentary storytelling, B-roll pacing, After Effects motion graphics, multi-cam podcasts, and brand promo films.
+          </div>
+          <div class="md:col-span-2 flex md:justify-end">
+            <span class="px-3 py-1 rounded-full border border-white/15 font-mono text-xs text-zinc-300">MOTION VFX</span>
+          </div>
+        </div>
+
+        <!-- Service 03 -->
+        <div class="service-row py-8 px-4 sm:px-6 grid md:grid-cols-12 gap-4 items-center gs-fade">
+          <div class="md:col-span-1 font-mono text-acid text-sm font-bold">03</div>
+          <div class="md:col-span-5">
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase">High-CTR Thumbnails</h3>
+          </div>
+          <div class="md:col-span-4 text-sm text-zinc-400">
+            Custom Photoshop compositing, dramatic lighting, and bold typography built to skyrocket click-through rates.
+          </div>
+          <div class="md:col-span-2 flex md:justify-end">
+            <span class="px-3 py-1 rounded-full border border-acid/40 text-acid font-mono text-xs">GRAPHIC DESIGN</span>
+          </div>
+        </div>
+
+        <!-- Service 04 -->
+        <div class="service-row py-8 px-4 sm:px-6 grid md:grid-cols-12 gap-4 items-center gs-fade">
+          <div class="md:col-span-1 font-mono text-acid text-sm font-bold">04</div>
+          <div class="md:col-span-5">
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase">Logos, Posters & Brand Kits</h3>
+          </div>
+          <div class="md:col-span-4 text-sm text-zinc-400">
+            Complete brand identities, vector logos, Instagram carousel systems, event posters, and marketing banners.
+          </div>
+          <div class="md:col-span-2 flex md:justify-end">
+            <span class="px-3 py-1 rounded-full border border-acid/40 text-acid font-mono text-xs">BRANDING</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3D PORTFOLIO SHOWCASE ==================== -->
+  <section id="portfolio" class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 gs-fade">
+        <div>
+          <span class="font-mono text-xs text-acid uppercase tracking-widest">// Selected Cuts & Designs</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white mt-2">Featured Vault</h2>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="inline-flex p-1.5 rounded-full bg-surface border border-white/10 self-start">
+          <button class="filter-btn active px-5 py-2 rounded-full font-mono text-xs font-bold bg-acid text-void transition" data-filter="all">ALL [06]</button>
+          <button class="filter-btn px-5 py-2 rounded-full font-mono text-xs font-bold text-zinc-400 hover:text-white transition" data-filter="video">VIDEO [03]</button>
+          <button class="filter-btn px-5 py-2 rounded-full font-mono text-xs font-bold text-zinc-400 hover:text-white transition" data-filter="design">DESIGN [03]</button>
+        </div>
+      </div>
+
+      <!-- Portfolio Grid -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+        <!-- Project 1 -->
+        <div class="portfolio-item tilt-card rounded-2xl bg-surface border border-white/10 overflow-hidden cursor-target gs-fade"
+             data-category="video" data-cursor="PLAY"
+             onclick="openModal('Viral Podcast & Reels Edit', 'VIDEO EDIT // 9:16 VERTICAL', 'High-retention short-form edit with kinetic captions, custom sound risers, and rapid visual hooks. Result: 3.5x organic reach.', 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1000&q=80')">
+          <div class="relative h-60 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-500 hover:scale-110" alt="Reels Edit">
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/80 border border-white/15 font-mono text-[10px] text-acid">4K // 60FPS</span>
+          </div>
+          <div class="p-6">
+            <div class="font-mono text-[11px] text-zinc-400 uppercase">Video Editing • Retention</div>
+            <h3 class="font-display text-xl font-bold text-white mt-1">Viral Podcast & Reels Edit</h3>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="portfolio-item tilt-card rounded-2xl bg-surface border border-white/10 overflow-hidden cursor-target gs-fade"
+             data-category="design" data-cursor="VIEW"
+             onclick="openModal('High-CTR YouTube Thumbnails', 'GRAPHIC DESIGN // PHOTOSHOP', 'Custom photo manipulation, dramatic rim lighting, and bold contrast crafted for a 500K+ tech creator—lifting CTR from 4.1% to 9.6%.', 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1000&q=80')">
+          <div class="relative h-60 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-500 hover:scale-110" alt="Thumbnail Design">
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/80 border border-white/15 font-mono text-[10px] text-cyan-400">PSD // CTR BOOST</span>
+          </div>
+          <div class="p-6">
+            <div class="font-mono text-[11px] text-zinc-400 uppercase">Graphic Design • Thumbnails</div>
+            <h3 class="font-display text-xl font-bold text-white mt-1">High-CTR Creator Thumbnails</h3>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="portfolio-item tilt-card rounded-2xl bg-surface border border-white/10 overflow-hidden cursor-target gs-fade"
+             data-category="video" data-cursor="PLAY"
+             onclick="openModal('Cinematic Commercial Brand Film', 'VIDEO EDIT // DAVINCI RESOLVE', 'Speed-ramped lifestyle & product film featuring seamless whip-pan transitions, SFX layering, and filmic color grading.', 'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1000&q=80')">
+          <div class="relative h-60 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-500 hover:scale-110" alt="Brand Film">
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/80 border border-white/15 font-mono text-[10px] text-acid">COLOR GRADED</span>
+          </div>
+          <div class="p-6">
+            <div class="font-mono text-[11px] text-zinc-400 uppercase">Commercial • Color & SFX</div>
+            <h3 class="font-display text-xl font-bold text-white mt-1">Cinematic Brand Commercial</h3>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="portfolio-item tilt-card rounded-2xl bg-surface border border-white/10 overflow-hidden cursor-target gs-fade"
+             data-category="design" data-cursor="VIEW"
+             onclick="openModal('Modern Startup Brand Identity', 'GRAPHIC DESIGN // ILLUSTRATOR', 'Minimalist geometric logo mark, typography hierarchy, dark/acid brand palette, and social launch kit.', 'https://images.unsplash.com/photo-1634942537034-2531766767d1?auto=format&fit=crop&w=1000&q=80')">
+          <div class="relative h-60 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1634942537034-2531766767d1?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-500 hover:scale-110" alt="Brand Identity">
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/80 border border-white/15 font-mono text-[10px] text-cyan-400">VECTOR // BRANDING</span>
+          </div>
+          <div class="p-6">
+            <div class="font-mono text-[11px] text-zinc-400 uppercase">Logo • Visual Identity</div>
+            <h3 class="font-display text-xl font-bold text-white mt-1">Startup Brand Identity Kit</h3>
+          </div>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="portfolio-item tilt-card rounded-2xl bg-surface border border-white/10 overflow-hidden cursor-target gs-fade"
+             data-category="video" data-cursor="PLAY"
+             onclick="openModal('YouTube Documentary Storytelling', 'VIDEO EDIT // AFTER EFFECTS', '18-minute investigative documentary featuring 3D map zooms, paper cutouts, motion typography, and immersive audio mixing.', 'https://images.unsplash.com/photo-1579566346927-c68383817a25?auto=format&fit=crop&w=1000&q=80')">
+          <div class="relative h-60 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1579566346927-c68383817a25?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-500 hover:scale-110" alt="Documentary Edit">
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/80 border border-white/15 font-mono text-[10px] text-acid">AE // MOTION GFX</span>
+          </div>
+          <div class="p-6">
+            <div class="font-mono text-[11px] text-zinc-400 uppercase">YouTube • Motion Graphics</div>
+            <h3 class="font-display text-xl font-bold text-white mt-1">Documentary Motion Storytelling</h3>
+          </div>
+        </div>
+
+        <!-- Project 6 -->
+        <div class="portfolio-item tilt-card rounded-2xl bg-surface border border-white/10 overflow-hidden cursor-target gs-fade"
+             data-category="design" data-cursor="VIEW"
+             onclick="openModal('Festival Poster & Ad Campaign', 'GRAPHIC DESIGN // PRINT & SOCIAL', 'Bold typographic posters, Instagram carousels, and animated ad banners for a creative culture event.', 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=1000&q=80')">
+          <div class="relative h-60 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-500 hover:scale-110" alt="Poster Design">
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/80 border border-white/15 font-mono text-[10px] text-cyan-400">PRINT // DIGITAL</span>
+          </div>
+          <div class="p-6">
+            <div class="font-mono text-[11px] text-zinc-400 uppercase">Posters • Social Kit</div>
+            <h3 class="font-display text-xl font-bold text-white mt-1">Event Poster & Ad Campaign</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TIMELINE WORKFLOW (EDITING TRACK UI) ==================== -->
+  <section id="timeline" class="py-24 bg-surface border-y border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-12 gs-fade">
+        <span class="font-mono text-xs text-acid uppercase tracking-widest">// Studio Pipeline</span>
+        <h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white mt-2">Our Editing Timeline</h2>
+      </div>
+
+      <!-- Fake NLE Timeline UI -->
+      <div class="rounded-2xl border border-white/15 bg-void p-4 sm:p-8 font-mono shadow-2xl gs-fade">
+        <!-- Time Ruler -->
+        <div class="flex justify-between text-[10px] text-zinc-500 border-b border-white/10 pb-2 mb-6">
+          <span>00:00</span><span>00:15</span><span>00:30</span><span>00:45</span><span class="text-acid font-bold">EXPORT 100%</span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Track V1 -->
+          <div class="grid grid-cols-12 gap-3 items-center">
+            <div class="col-span-3 sm:col-span-2 text-xs text-zinc-400 border-r border-white/10 pr-2">V1 // BRIEF</div>
+            <div class="col-span-9 sm:col-span-10">
+              <div class="timeline-clip w-full sm:w-1/2 p-4 rounded-xl bg-electric/20 border border-electric/50 text-white">
+                <div class="text-xs font-bold text-violet-300">01. UPLOAD RAW FILES & VISION</div>
+                <div class="text-[11px] text-zinc-300 font-sans mt-1">Send clips or design brief via Drive / WeTransfer.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Track V2 -->
+          <div class="grid grid-cols-12 gap-3 items-center">
+            <div class="col-span-3 sm:col-span-2 text-xs text-zinc-400 border-r border-white/10 pr-2">V2 // CUT & DESIGN</div>
+            <div class="col-span-9 sm:col-span-10 flex sm:justify-center">
+              <div class="timeline-clip w-full sm:w-2/3 p-4 rounded-xl bg-cyan-500/15 border border-cyan-400/50 text-white">
+                <div class="text-xs font-bold text-cyan-300">02. STORYTELLING, MOTION & LAYOUT</div>
+                <div class="text-[11px] text-zinc-300 font-sans mt-1">Rough cut, motion graphics, typography & visual hooks crafted.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Track A1 -->
+          <div class="grid grid-cols-12 gap-3 items-center">
+            <div class="col-span-3 sm:col-span-2 text-xs text-zinc-400 border-r border-white/10 pr-2">A1 // POLISH</div>
+            <div class="col-span-9 sm:col-span-10 flex sm:justify-end">
+              <div class="timeline-clip w-full sm:w-2/3 p-4 rounded-xl bg-amber-500/15 border border-amber-400/50 text-white">
+                <div class="text-xs font-bold text-amber-300">03. COLOR GRADE, SFX & REVISIONS</div>
+                <div class="text-[11px] text-zinc-300 font-sans mt-1">Cinema grade, punchy audio mix & feedback tweaks.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Master Export -->
+          <div class="grid grid-cols-12 gap-3 items-center pt-2">
+            <div class="col-span-3 sm:col-span-2 text-xs text-acid font-bold border-r border-white/10 pr-2">MASTER</div>
+            <div class="col-span-9 sm:col-span-10">
+              <div class="timeline-clip w-full p-4 rounded-xl bg-acid text-void">
+                <div class="text-xs font-extrabold">04. FINAL 4K VIDEO / PRINT-READY DELIVERY</div>
+                <div class="text-xs font-sans font-medium mt-0.5">Ready to publish across YouTube, Instagram & campaigns in 24–48 hours.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PRICING SECTION ==================== -->
+  <section id="pricing" class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 gs-fade">
+        <div>
+          <span class="font-mono text-xs text-acid uppercase tracking-widest">// Investment</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white mt-2">Studio Packages</h2>
+        </div>
+
+        <!-- Currency Switcher -->
+        <div class="inline-flex p-1 rounded-full bg-surface border border-white/15 self-start">
+          <button id="btn-inr" onclick="setCurrency('INR')" class="px-5 py-2 rounded-full font-mono text-xs font-bold bg-acid text-void transition">₹ INR</button>
+          <button id="btn-usd" onclick="setCurrency('USD')" class="px-5 py-2 rounded-full font-mono text-xs font-bold text-zinc-400 hover:text-white transition">$ USD</button>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-7">
+        <!-- Plan 1 -->
+        <div class="tilt-card rounded-3xl bg-surface border border-white/10 p-8 flex flex-col justify-between gs-fade">
+          <div>
+            <span class="font-mono text-xs text-cyan-400 uppercase">01 // Graphic Design</span>
+            <h3 class="font-display text-2xl font-bold text-white mt-2">Starter Design</h3>
+            <div class="my-6">
+              <span class="font-display text-5xl font-extrabold text-white price-tag" data-inr="₹799" data-usd="$15">₹799</span>
+              <span class="font-mono text-xs text-zinc-400"> / starting</span>
+            </div>
+            <ul class="space-y-3 text-sm text-zinc-300">
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> High-CTR Thumbnail or Poster</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Ultra-Crisp PNG/JPG + Web Ready</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> 24-Hour Express Turnaround</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> 2 Revision Rounds</li>
+            </ul>
+          </div>
+          <a href="#contact" onclick="selectService('Graphic Design - Starter Pack')" class="magnetic mt-8 block text-center py-3.5 rounded-full border border-white/20 text-white font-bold text-xs uppercase tracking-wider hover:border-acid hover:text-acid transition">
+            Book Design ↗
+          </a>
+        </div>
+
+        <!-- Plan 2 -->
+        <div class="tilt-card rounded-3xl bg-gradient-to-b from-electric/25 to-surface border-2 border-acid p-8 flex flex-col justify-between relative shadow-[0_0_50px_rgba(204,255,0,0.12)] gs-fade">
+          <div class="absolute -top-3.5 right-6 px-3.5 py-1 rounded-full bg-acid text-void font-mono text-[10px] font-extrabold uppercase">Most Popular</div>
+          <div>
+            <span class="font-mono text-xs text-acid uppercase">02 // Video Editing</span>
+            <h3 class="font-display text-2xl font-bold text-white mt-2">Creator Pro Cut</h3>
+            <div class="my-6">
+              <span class="font-display text-5xl font-extrabold text-white price-tag" data-inr="₹1,499" data-usd="$30">₹1,499</span>
+              <span class="font-mono text-xs text-zinc-300"> / per video</span>
+            </div>
+            <ul class="space-y-3 text-sm text-zinc-200">
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Viral Reel (60s) or YouTube (8 min)</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Motion Captions, B-Roll & VFX</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Cinematic Color Grade & SFX</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Free Matching Thumbnail Included</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> 3 Revision Rounds</li>
+            </ul>
+          </div>
+          <a href="#contact" onclick="selectService('Video Editing - Creator Pro')" class="magnetic mt-8 block text-center py-3.5 rounded-full bg-acid text-void font-bold text-xs uppercase tracking-wider hover:bg-white transition">
+            Book Creator Pro ↗
+          </a>
+        </div>
+
+        <!-- Plan 3 -->
+        <div class="tilt-card rounded-3xl bg-surface border border-white/10 p-8 flex flex-col justify-between gs-fade">
+          <div>
+            <span class="font-mono text-xs text-violet-400 uppercase">03 // Full Studio</span>
+            <h3 class="font-display text-2xl font-bold text-white mt-2">Monthly Hub Retainer</h3>
+            <div class="my-6">
+              <span class="font-display text-5xl font-extrabold text-white price-tag" data-inr="₹14,999" data-usd="$299">₹14,999</span>
+              <span class="font-mono text-xs text-zinc-400"> / month</span>
+            </div>
+            <ul class="space-y-3 text-sm text-zinc-300">
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> 12 Reels OR 4 Long YouTube Videos</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> 8 Custom Thumbnails / Graphics</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Priority Direct WhatsApp Channel</li>
+              <li class="flex items-center gap-2.5"><span class="text-acid">✦</span> Source Files & Unlimited Revisions</li>
+            </ul>
+          </div>
+          <a href="#contact" onclick="selectService('Monthly Studio Retainer')" class="magnetic mt-8 block text-center py-3.5 rounded-full border border-white/20 text-white font-bold text-xs uppercase tracking-wider hover:border-acid hover:text-acid transition">
+            Partner Monthly ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONTACT SECTION ==================== -->
+  <section id="contact" class="py-24 bg-surface border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-12 gap-12 items-start">
+        <!-- Left CTA Text -->
+        <div class="lg:col-span-5 gs-fade">
+          <span class="font-mono text-xs text-acid uppercase tracking-widest">// Start Rendering</span>
+          <h2 class="font-display text-4xl sm:text-5xl font-extrabold uppercase text-white mt-3 leading-none">
+            Let’s Make Something <span class="text-acid">Unforgettable.</span>
+          </h2>
+          <p class="text-zinc-400 text-sm sm:text-base mt-5 leading-relaxed">
+            Drop your project brief below or hit WhatsApp for an instant creative chat. Available globally for creators, agencies, and brands.
+          </p>
+
+          <div class="mt-8 space-y-4 font-mono text-xs">
+            <a href="mailto:contact@arvindeditinghub.com" class="flex items-center gap-3 text-zinc-300 hover:text-acid transition">
+              <span class="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-acid"><i class="fa-solid fa-envelope"></i></span>
+              contact@arvindeditinghub.com
+            </a>
+            <a href="https://wa.me/919999999999" target="_blank" class="flex items-center gap-3 text-zinc-300 hover:text-acid transition">
+              <span class="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400"><i class="fa-brands fa-whatsapp text-base"></i></span>
+              +91 99999 99999 (Direct WhatsApp)
+            </a>
+          </div>
+
+          <div class="mt-8 flex gap-3">
+            <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-zinc-300 hover:bg-acid hover:text-void hover:border-acid transition"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-zinc-300 hover:bg-acid hover:text-void hover:border-acid transition"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-zinc-300 hover:bg-acid hover:text-void hover:border-acid transition"><i class="fa-brands fa-behance"></i></a>
+          </div>
+        </div>
+
+        <!-- Right Form -->
+        <div class="lg:col-span-7 rounded-3xl bg-void border border-white/15 p-7 sm:p-10 gs-fade">
+          <form id="contact-form" class="space-y-5">
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block font-mono text-[11px] uppercase text-zinc-400 mb-2">Your Name</label>
+                <input type="text" id="client-name" required placeholder="Alex / Rahul" class="w-full px-4 py-3.5 rounded-xl bg-surface border border-white/10 text-white text-sm focus:outline-none focus:border-acid transition">
+              </div>
+              <div>
+                <label class="block font-mono text-[11px] uppercase text-zinc-400 mb-2">Email or Phone</label>
+                <input type="text" id="client-contact" required placeholder="you@studio.com" class="w-full px-4 py-3.5 rounded-xl bg-surface border border-white/10 text-white text-sm focus:outline-none focus:border-acid transition">
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[11px] uppercase text-zinc-400 mb-2">Select Service</label>
+              <select id="service-select" class="w-full px-4 py-3.5 rounded-xl bg-surface border border-white/10 text-white text-sm focus:outline-none focus:border-acid transition">
+                <option value="Video Editing - Reels / Shorts">Video Editing (Reels / Shorts)</option>
+                <option value="Video Editing - Creator Pro">Video Editing - Creator Pro</option>
+                <option value="Video Editing - YouTube / Documentary">YouTube Long-Form / Documentary</option>
+                <option value="Graphic Design - Starter Pack">Graphic Design - Starter Pack</option>
+                <option value="Graphic Design - Logo & Brand Identity">Logo & Brand Identity</option>
+                <option value="Monthly Studio Retainer">Monthly Studio Retainer</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[11px] uppercase text-zinc-400 mb-2">Brief & Reference Links</label>
+              <textarea id="client-message" rows="4" required placeholder="Tell me about your footage, style, deadline, or paste a Drive/YouTube reference..." class="w-full px-4 py-3.5 rounded-xl bg-surface border border-white/10 text-white text-sm focus:outline-none focus:border-acid transition"></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+              <button type="submit" class="magnetic flex-1 py-4 px-6 rounded-full bg-acid text-void font-bold text-xs uppercase tracking-wider hover:bg-white transition">
+                Submit Brief ↗
+              </button>
+              <button type="button" onclick="sendViaWhatsApp()" class="magnetic py-4 px-6 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-bold text-xs uppercase tracking-wider hover:bg-emerald-500/20 transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp Fast
+              </button>
+            </div>
+
+            <div id="form-success" class="hidden p-4 rounded-xl bg-acid/15 border border-acid/40 text-acid font-mono text-xs">
+              ✓ BRIEF RECEIVED // Arvind Editing Hub will contact you shortly!
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="py-8 border-t border-white/10 bg-void text-center sm:text-left">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 font-mono text-xs text-zinc-500">
+      <div><span class="text-white font-bold">ARVIND EDITING HUB</span> // VIDEO & DESIGN STUDIO</div>
+      <div>© <span id="year"></span> ALL RIGHTS RESERVED</div>
+    </div>
+  </footer>
+
+  <!-- ==================== PORTFOLIO LIGHTBOX MODAL ==================== -->
+  <div id="portfolio-modal" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4">
+    <div class="rounded-3xl bg-surface border border-white/15 max-w-2xl w-full overflow-hidden relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/70 text-white hover:bg-acid hover:text-void flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="modal-img" src="" alt="Preview" class="w-full h-64 sm:h-80 object-cover">
+      <div class="p-6 sm:p-8">
+        <div id="modal-tag" class="font-mono text-xs text-acid uppercase"></div>
+        <h3 id="modal-title" class="font-display text-2xl sm:text-3xl font-bold text-white mt-1"></h3>
+        <p id="modal-desc" class="text-sm text-zinc-300 mt-3 leading-relaxed"></p>
+        <div class="mt-6 flex justify-end">
+          <a href="#contact" onclick="closeModal()" class="px-6 py-3 rounded-full bg-acid text-void font-bold text-xs uppercase tracking-wider hover:bg-white transition">
+            Book Similar Project ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== INTERACTIVE & GSAP SCRIPTS ==================== -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 1. CINEMATIC PRELOADER + HERO REVEAL
+    window.addEventListener('DOMContentLoaded', () => {
+      const bar = document.getElementById('loader-bar');
+      const pct = document.getElementById('loader-percent');
+      const preloader = document.getElementById('preloader');
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 14) + 8;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          bar.style.width = '100%';
+          pct.textContent = '100%';
+
+          setTimeout(() => {
+            if (typeof gsap !== 'undefined') {
+              gsap.to(preloader, {
+                yPercent: -100,
+                duration: 0.75,
+                ease: 'power4.inOut',
+                onComplete: () => {
+                  preloader.style.display = 'none';
+                  initAnimations();
+                }
+              });
+            } else {
+              preloader.style.display = 'none';
+            }
+          }, 220);
+        } else {
+          bar.style.width = progress + '%';
+          pct.textContent = String(progress).padStart(2, '0') + '%';
+        }
+      }, 45);
+    });
+
+    // 2. GSAP SCROLL & HERO ANIMATIONS
+    function initAnimations() {
+      if (typeof gsap === 'undefined') return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.from('.hero-line', {
+        y: 110,
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.15,
+        ease: 'power4.out'
+      });
+
+      gsap.from('.hero-reveal', {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        delay: 0.25,
+        ease: 'power3.out'
+      });
+
+      gsap.utils.toArray('.gs-fade').forEach((el) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 86%',
+            once: true
+          },
+          y: 35,
+          opacity: 0,
+          duration: 0.75,
+          ease: 'power3.out'
+        });
+      });
+
+      gsap.from('.timeline-clip', {
+        scrollTrigger: {
+          trigger: '#timeline',
+          start: 'top 75%',
+          once: true
+        },
+        scaleX: 0.4,
+        opacity: 0,
+        transformOrigin: 'left center',
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out'
+      });
+    }
+
+    // 3. CUSTOM MAGNETIC CURSOR & MOUSE GLOW
+    const cursor = document.getElementById('custom-cursor');
+    const mouseGlow = document.getElementById('mouse-glow');
+
+    document.addEventListener('mousemove', (e) => {
+      mouseGlow.style.left = e.clientX + 'px';
+      mouseGlow.style.top = e.clientY + 'px';
+
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    document.querySelectorAll('a, button, .magnetic').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    });
+
+    document.querySelectorAll('[data-cursor]').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.classList.add('view-mode');
+        cursor.textContent = el.getAttribute('data-cursor');
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.classList.remove('view-mode');
+        cursor.textContent = '';
+      });
+    });
+
+    // 4. 3D MOUSE-TILT CARDS
+    document.querySelectorAll('.tilt-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / rect.height) * -8;
+        const rotateY = ((x - rect.width / 2) / rect.width) * 8;
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.015)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)';
+      });
+    });
+
+    // 5. LIVE TIMECODE TICKER (60 FPS FEEL)
+    let frames = 0;
+    const tcEl = document.getElementById('live-timecode');
+    setInterval(() => {
+      frames++;
+      const f = frames % 60;
+      const totalSec = Math.floor(frames / 60);
+      const s = totalSec % 60;
+      const m = Math.floor(totalSec / 60) % 60;
+      const h = Math.floor(totalSec / 3600);
+      tcEl.textContent =
+        String(h).padStart(2, '0') + ':' +
+        String(m).padStart(2, '0') + ':' +
+        String(s).padStart(2, '0') + ':' +
+        String(f).padStart(2, '0');
+    }, 1000 / 24);
+
+    // 6. INTERACTIVE RAW VS GRADED DRAG SLIDER
+    const compareBox = document.getElementById('compare-box');
+    const compareOverlay = document.getElementById('compare-overlay');
+    const compareHandle = document.getElementById('compare-handle');
+    const rawImg = document.getElementById('raw-img');
+
+    function syncRawWidth() {
+      rawImg.style.width = compareBox.offsetWidth + 'px';
+    }
+    window.addEventListener('resize', syncRawWidth);
+    syncRawWidth();
+
+    let isDragging = false;
+    function moveSlider(clientX) {
+      const rect = compareBox.getBoundingClientRect();
+      let x = clientX - rect.left;
+      if (x < 0) x = 0;
+      if (x > rect.width) x = rect.width;
+      const percent = (x / rect.width) * 100;
+      compareOverlay.style.width = percent + '%';
+      compareHandle.style.left = percent + '%';
+    }
+
+    compareBox.addEventListener('mousedown', (e) => { isDragging = true; moveSlider(e.clientX); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mousemove', (e) => { if (isDragging) moveSlider(e.clientX); });
+
+    compareBox.addEventListener('touchstart', (e) => { isDragging = true; moveSlider(e.touches[0].clientX); });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    window.addEventListener('touchmove', (e) => { if (isDragging) moveSlider(e.touches[0].clientX); });
+
+    // 7. MOBILE MENU
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    menuToggle.addEventListener('click', () => mobileDrawer.classList.toggle('hidden'));
+    document.querySelectorAll('.mobile-nav-link').forEach(l => l.addEventListener('click', () => mobileDrawer.classList.add('hidden')));
+
+    // 8. PORTFOLIO FILTER
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const items = document.querySelectorAll('.portfolio-item');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => {
+          b.classList.remove('active', 'bg-acid', 'text-void');
+          b.classList.add('text-zinc-400');
+        });
+        btn.classList.add('active', 'bg-acid', 'text-void');
+        btn.classList.remove('text-zinc-400');
+
+        const f = btn.getAttribute('data-filter');
+        items.forEach(item => {
+          item.classList.toggle('hidden', f !== 'all' && item.getAttribute('data-category') !== f);
+        });
+      });
+    });
+
+    // 9. CURRENCY SWITCHER
+    function setCurrency(curr) {
+      const btnInr = document.getElementById('btn-inr');
+      const btnUsd = document.getElementById('btn-usd');
+      document.querySelectorAll('.price-tag').forEach(p => {
+        p.textContent = curr === 'INR' ? p.getAttribute('data-inr') : p.getAttribute('data-usd');
+      });
+      if (curr === 'INR') {
+        btnInr.className = 'px-5 py-2 rounded-full font-mono text-xs font-bold bg-acid text-void transition';
+        btnUsd.className = 'px-5 py-2 rounded-full font-mono text-xs font-bold text-zinc-400 hover:text-white transition';
+      } else {
+        btnUsd.className = 'px-5 py-2 rounded-full font-mono text-xs font-bold bg-acid text-void transition';
+        btnInr.className = 'px-5 py-2 rounded-full font-mono text-xs font-bold text-zinc-400 hover:text-white transition';
+      }
+    }
+
+    // 10. MODAL & FORM
+    const modal = document.getElementById('portfolio-modal');
+    function openModal(title, tag, desc, img) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-tag').textContent = tag;
+      document.getElementById('modal-desc').textContent = desc;
+      document.getElementById('modal-img').src = img;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeModal() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    function selectService(val) {
+      const sel = document.getElementById('service-select');
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === val) { sel.selectedIndex = i; break; }
+      }
+    }
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('form-success').classList.remove('hidden');
+      this.reset();
+    });
+
+    function sendViaWhatsApp() {
+      const whatsappNumber = '919999999999'; // <-- Put your real WhatsApp number here
+      const name = document.getElementById('client-name').value || 'a potential client';
+      const service = document.getElementById('service-select').value;
+      const msg = document.getElementById('client-message').value || 'Looking to start an editing/design project.';
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Arvind Editing Hub! I'm ${name}. Interested in *${service}*. Brief: ${msg}`)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
